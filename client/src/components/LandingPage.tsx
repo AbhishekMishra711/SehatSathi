@@ -150,134 +150,156 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
       position: 'relative',
       overflowX: 'hidden'
     }}>
-      {/* Floating Capsule Navbar (Containerized & Centered, Like Apple / Modern SaaS) */}
-      <header style={{
+      {/* Full-Width Clean Modern Navbar (Medico Reference Style) */}
+      <nav style={{
         position: 'sticky',
-        top: '16px',
+        top: 0,
         zIndex: 100,
-        maxWidth: '1240px',
-        width: 'calc(100% - 32px)',
-        margin: '12px auto 0 auto'
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderBottom: '1px solid #E2E8F0',
+        boxShadow: '0 2px 12px rgba(15, 23, 42, 0.04)',
+        padding: '16px 56px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '24px'
       }}>
-        <nav className="floating-capsule-nav" style={{
-          padding: '10px 24px',
+        {/* Brand Logo & Editorial Typography */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <img
+            src="/logo.png"
+            alt="SehatSathi Care Logo"
+            className="animate-logo-entrance logo-pulse"
+            style={{
+              width: '44px',
+              height: '44px',
+              objectFit: 'contain'
+            }}
+          />
+          <div className="animate-title-slide">
+            <span style={{
+              fontSize: '1.5rem',
+              fontWeight: 800,
+              color: '#0F172A',
+              letterSpacing: '-0.025em',
+              display: 'block',
+              lineHeight: 1.1
+            }}>
+              SehatSathi
+            </span>
+            <span style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              color: '#00AC73',
+              letterSpacing: '0.8px'
+            }}>
+              DIGNIFIED SENIOR CARE
+            </span>
+          </div>
+        </div>
+
+        {/* Center Minimal Navigation Links */}
+        <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px'
+          gap: '28px'
         }}>
-          {/* Brand Logo & Editorial Typography */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img
-              src="/logo.png"
-              alt="SehatSathi Care Logo"
-              className="animate-logo-entrance logo-pulse"
-              style={{
-                width: '42px',
-                height: '42px',
-                objectFit: 'contain'
-              }}
-            />
-            <div className="animate-title-slide">
-              <span style={{
-                fontSize: '1.4rem',
-                fontWeight: 800,
-                color: '#0F172A',
-                letterSpacing: '-0.025em',
-                display: 'block',
-                lineHeight: 1.1
-              }}>
-                SehatSathi
-              </span>
-              <span style={{
-                fontSize: '0.68rem',
-                fontWeight: 700,
-                color: '#00A86B',
-                letterSpacing: '0.8px'
-              }}>
-                DIGNIFIED SENIOR CARE
-              </span>
-            </div>
-          </div>
+          <button
+            onClick={() => {
+              const el = document.getElementById('features-section');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              fontSize: '0.94rem',
+              fontWeight: 600,
+              color: '#475569',
+              cursor: 'pointer',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#0F172A')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#475569')}
+          >
+            Features
+          </button>
+          <button
+            onClick={() => {
+              const el = document.getElementById('escalation-section');
+              el?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              fontSize: '0.94rem',
+              fontWeight: 600,
+              color: '#475569',
+              cursor: 'pointer',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#0F172A')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#475569')}
+          >
+            Escalation Protocol
+          </button>
+          <button
+            onClick={() => setShowPrivacyModal(true)}
+            style={{
+              fontSize: '0.94rem',
+              fontWeight: 600,
+              color: '#475569',
+              cursor: 'pointer',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#0F172A')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#475569')}
+          >
+            Safety & Privacy
+          </button>
+        </div>
 
-          {/* Center Minimal Navigation Links with Hover Pill Styles */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <button
-              onClick={() => {
-                const el = document.getElementById('features-section');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="nav-link"
-            >
-              Features
-            </button>
-            <button
-              onClick={() => {
-                const el = document.getElementById('escalation-section');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="nav-link"
-            >
-              Escalation Protocol
-            </button>
-            <button
-              onClick={() => setShowPrivacyModal(true)}
-              className="nav-link"
-            >
-              Safety & Privacy
-            </button>
-          </div>
+        {/* Action CTAs */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={() => setModalRole('ELDER')}
+            style={{
+              padding: '10px 22px',
+              borderRadius: '9999px',
+              backgroundColor: '#E8F8EE',
+              border: '1px solid #A7F3D0',
+              color: '#00875A',
+              fontWeight: 700,
+              fontSize: '0.92rem',
+              cursor: 'pointer'
+            }}
+          >
+            Patient Access
+          </button>
 
-          {/* Action CTAs */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button
-              onClick={() => setModalRole('ELDER')}
-              style={{
-                padding: '9px 20px',
-                borderRadius: '9999px',
-                backgroundColor: '#E8F8EE',
-                border: '1px solid #A7F3D0',
-                color: '#00875A',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer'
-              }}
-            >
-              Patient Access
-            </button>
+          <button
+            onClick={() => setModalRole('CARETAKER')}
+            style={{
+              padding: '10px 24px',
+              borderRadius: '9999px',
+              backgroundColor: '#00AC73',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              fontSize: '0.92rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(0, 172, 115, 0.25)'
+            }}
+          >
+            <span>Caretaker Portal</span>
+            <ArrowRight size={16} />
+          </button>
+        </div>
+      </nav>
 
-            <button
-              onClick={() => setModalRole('CARETAKER')}
-              style={{
-                padding: '9px 22px',
-                borderRadius: '9999px',
-                backgroundColor: '#0F172A',
-                color: '#FFFFFF',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
-              }}
-            >
-              <span>Caretaker Portal</span>
-              <ArrowRight size={15} />
-            </button>
-          </div>
-        </nav>
-      </header>
-
-      {/* Hero Section: Modern, Breathable & Editorial (Consulto + SmartCare feel) */}
+      {/* Hero Section: Modern, Breathable & Editorial with Comfortable Side Whitespace */}
       <section style={{
-        maxWidth: '1280px',
+        maxWidth: '1180px',
         margin: '0 auto',
-        padding: '52px 28px 48px 28px',
+        padding: '52px 28px 44px 28px',
         textAlign: 'center',
         position: 'relative',
         zIndex: 1,
@@ -299,25 +321,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           border: '1px solid #A7F3D0',
           boxShadow: '0 2px 8px rgba(167, 243, 208, 0.4)'
         }}>
-          <Sparkles size={16} color="#00A86B" />
+          <Sparkles size={16} color="#00AC73" />
           <span>Patient-Centered Elderly Care & Medication Management</span>
         </div>
 
         {/* Editorial Modern Headline */}
         <h1 style={{
-          fontSize: 'clamp(2.7rem, 5.5vw, 4.4rem)',
+          fontSize: 'clamp(2.6rem, 5.2vw, 4.2rem)',
           fontWeight: 800,
           letterSpacing: '-0.035em',
           lineHeight: 1.15,
           color: '#0F172A',
-          maxWidth: '1100px',
-          margin: '0 auto 20px auto'
+          maxWidth: '1040px',
+          margin: '0 auto 18px auto'
         }}>
           Dignified Healthcare for Seniors.{' '}
           <span style={{
-            background: 'linear-gradient(135deg, #00A86B 0%, #0284C7 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            color: '#00AC73',
             display: 'inline-block'
           }}>
             Peace of Mind for Families.
@@ -326,25 +346,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
         {/* Humanized Subtext */}
         <p style={{
-          fontSize: '1.18rem',
+          fontSize: '1.16rem',
           fontWeight: 500,
           color: '#64748B',
-          maxWidth: '820px',
-          margin: '0 auto 36px auto',
+          maxWidth: '780px',
+          margin: '0 auto 34px auto',
           lineHeight: 1.65
         }}>
           SehatSathi empowers seniors with an accessible, high-contrast mobile interface, voice audio assistant, 
           and an intelligent escalation chain that keeps family notified when doses are missed.
         </p>
 
-        {/* Floating Category Pills (Inspired by Consulto's quick category pills) */}
+        {/* Floating Category Pills */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           gap: '12px',
           flexWrap: 'wrap',
-          marginBottom: '44px'
+          marginBottom: '42px'
         }}>
           <span style={{
             padding: '8px 18px',
@@ -359,7 +379,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             alignItems: 'center',
             gap: '8px'
           }}>
-            <Volume2 size={16} color="#00A86B" /> Voice Sathi Companion
+            <Volume2 size={16} color="#00AC73" /> Voice Sathi Companion
           </span>
           <span style={{
             padding: '8px 18px',
@@ -389,7 +409,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             alignItems: 'center',
             gap: '8px'
           }}>
-            <Smartphone size={16} color="#00A86B" /> 4-Digit Senior PIN
+            <Smartphone size={16} color="#00AC73" /> 4-Digit Senior PIN
           </span>
           <span style={{
             padding: '8px 18px',
@@ -408,10 +428,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           </span>
         </div>
 
-        {/* Floating Dual-Portal Showcase Card (Consulto / Surgico Glass Bento Style) */}
+        {/* Uncluttered Dual-Portal Console (High Visual Hierarchy, Zero Nested Clutter) */}
         <div className="glass-card" style={{
-          borderRadius: '28px',
-          maxWidth: '1180px',
+          borderRadius: '24px',
+          maxWidth: '1140px',
           margin: '0 auto',
           overflow: 'hidden',
           display: 'grid',
@@ -420,7 +440,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         }}>
           {/* Senior Patient Side */}
           <div style={{
-            padding: '44px 40px',
+            padding: '44px 38px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -428,7 +448,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             background: 'linear-gradient(180deg, #FFFFFF 0%, #F6FBF8 100%)'
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ marginBottom: '14px' }}>
                 <span style={{
                   display: 'inline-block',
                   fontSize: '0.78rem',
@@ -441,60 +461,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 }}>
                   SENIOR PATIENT PORTAL
                 </span>
-                <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>High Contrast Mode</span>
               </div>
 
-              <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', marginBottom: '10px', letterSpacing: '-0.02em' }}>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', marginBottom: '10px', letterSpacing: '-0.025em' }}>
                 Simple, Dignified Senior View
               </h2>
-              <p style={{ fontSize: '0.98rem', color: '#64748B', lineHeight: 1.6, marginBottom: '24px' }}>
-                Designed specifically for aging eyes and one-touch interaction. Large targets, high contrast, and zero confusion.
+              <p style={{ fontSize: '1rem', color: '#64748B', lineHeight: 1.6, marginBottom: '28px' }}>
+                Built for aging eyes and one-touch interaction. Large touch targets, gentle audio guidance, and zero confusion.
               </p>
 
-              {/* Patient Mock Card */}
-              <div style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '16px',
-                border: '1px solid #E2E8F0',
-                padding: '16px 20px',
-                marginBottom: '26px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Metformin 500mg</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '9999px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
-                    Due 8:00 AM
-                  </span>
+              {/* Clean, Non-Overwhelming Feature Points */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '34px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E8F8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <Smartphone size={18} color="#00AC73" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>One-Touch 4-Digit PIN Access</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>No complex passwords or usernames to remember. 15-minute brute-force protection built in.</p>
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: '12px' }}>Take 1 tablet with warm water after breakfast</div>
-                <div style={{
-                  padding: '10px 16px',
-                  backgroundColor: '#E8F8EE',
-                  borderRadius: '10px',
-                  color: '#00704A',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Volume2 size={16} color="#00A86B" />
-                  <span>Audio read aloud available</span>
-                </div>
-              </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.94rem', color: '#334155', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#00A86B" style={{ flexShrink: 0 }} />
-                  <span>One-touch 4-digit PIN access (no passwords to forget)</span>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E8F8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <Volume2 size={18} color="#00AC73" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Voice & Audio Sathi Companion</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Speaks medication dosages aloud and answers daily routine or diet questions naturally.</p>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.94rem', color: '#334155', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#00A86B" style={{ flexShrink: 0 }} />
-                  <span>Natural Sathi Voice Companion for daily routine guidance</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.94rem', color: '#334155', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#00A86B" style={{ flexShrink: 0 }} />
-                  <span>Senior-controlled caregiver permissions with instant revoke</span>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E8F8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <ShieldCheck size={18} color="#00AC73" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Senior-Controlled Dignity</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Seniors generate their own caregiver link code and can revoke permissions anytime.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -504,8 +509,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               style={{
                 width: '100%',
                 padding: '16px 24px',
-                borderRadius: '14px',
-                backgroundColor: '#00A86B',
+                borderRadius: '12px',
+                backgroundColor: '#00AC73',
                 color: '#FFFFFF',
                 fontWeight: 700,
                 fontSize: '1.02rem',
@@ -513,7 +518,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: '0 6px 18px rgba(0, 168, 107, 0.25)',
+                boxShadow: '0 6px 18px rgba(0, 172, 115, 0.25)',
                 cursor: 'pointer'
               }}
             >
@@ -524,14 +529,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
           {/* Caretaker & Family Side */}
           <div style={{
-            padding: '44px 40px',
+            padding: '44px 38px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 100%)'
           }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ marginBottom: '14px' }}>
                 <span style={{
                   display: 'inline-block',
                   fontSize: '0.78rem',
@@ -544,62 +549,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 }}>
                   CARE CIRCLE & FAMILY GUARDIAN
                 </span>
-                <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>Real-Time Sync</span>
               </div>
 
-              <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', marginBottom: '10px', letterSpacing: '-0.02em' }}>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', marginBottom: '10px', letterSpacing: '-0.025em' }}>
                 Intelligent Safety Net
               </h2>
-              <p style={{ fontSize: '0.98rem', color: '#64748B', lineHeight: 1.6, marginBottom: '24px' }}>
-                Real-time visibility into medication adherence, doctor visits, and deterministic multi-tier escalation warnings.
+              <p style={{ fontSize: '1rem', color: '#64748B', lineHeight: 1.6, marginBottom: '28px' }}>
+                Real-time visibility into medication adherence, doctor visits, and multi-tier escalation warnings.
               </p>
 
-              {/* Caretaker Mock Card */}
-              <div style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '16px',
-                border: '1px solid #E2E8F0',
-                padding: '16px 20px',
-                marginBottom: '26px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Escalation Protocol</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '9999px', backgroundColor: '#DCFCE7', color: '#15803D' }}>
-                    Active &bull; Standby
-                  </span>
+              {/* Clean, Non-Overwhelming Feature Points */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '34px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <AlertTriangle size={18} color="#0284C7" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>3-Tier Automated Escalation</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Deterministic notification chain alert caretakers immediately if a scheduled dose is missed.</p>
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: '12px' }}>
-                  If morning dose is unconfirmed by 8:15 AM, primary caretaker is notified immediately.
-                </div>
-                <div style={{
-                  padding: '10px 16px',
-                  backgroundColor: '#F1F5F9',
-                  borderRadius: '10px',
-                  color: '#334155',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <ShieldCheck size={16} color="#0284C7" />
-                  <span>3 Family Members Linked in Care Circle</span>
-                </div>
-              </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.94rem', color: '#334155', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#0284C7" style={{ flexShrink: 0 }} />
-                  <span>3-tier automated escalation for any unconfirmed dose</span>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <Sparkles size={18} color="#0284C7" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Gemini AI Prescription Parser</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Extracts schedules and safety notes from prescriptions with human verification.</p>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.94rem', color: '#334155', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#0284C7" style={{ flexShrink: 0 }} />
-                  <span>Gemini 2.0 AI schedule parser with human verification</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.94rem', color: '#334155', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#0284C7" style={{ flexShrink: 0 }} />
-                  <span>Complete tamper-evident audit history of all doses & alerts</span>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <Eye size={18} color="#0284C7" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Tamper-Evident Medical Audit</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Permanent cryptographic history of all doses confirmed, modified, or alerted.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -609,7 +597,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               style={{
                 width: '100%',
                 padding: '16px 24px',
-                borderRadius: '14px',
+                borderRadius: '12px',
                 backgroundColor: '#0F172A',
                 color: '#FFFFFF',
                 fontWeight: 700,

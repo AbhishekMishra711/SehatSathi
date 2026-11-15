@@ -1,6 +1,6 @@
 :root {
   /* Modern Healthcare Brand Palette */
-  --c-primary: #00A86B; /* Vibrant Emerald */
+  --c-primary: #00AC73; /* Medical Emerald */
   --c-primary-hover: #00875A;
   --c-primary-soft: #E8F8EE;
   --c-primary-border: #A7F3D0;
@@ -11,11 +11,20 @@
   --c-sky: #0284C7;
   --c-sky-soft: #E0F2FE;
 
+  /* Backward-compatible token mappings to prevent styling breaks */
+  --c-deep-ocean: #0F172A;
+  --c-teal-green: #00AC73;
+  --c-ocean-teal: #0284C7;
+  --c-mint: #00AC73;
+  --c-mint-light: #E8F8EE;
+  --border-strong: #CBD5E1;
+  --border-color: #E2E8F0;
+
   /* Semantic Tokens */
   --bg-canvas: #FAFCFB;
   --bg-surface: #FFFFFF;
   --border-subtle: rgba(226, 232, 240, 0.85);
-  --border-focus: #00A86B;
+  --border-focus: #00AC73;
 
   --text-main: #0F172A;
   --text-body: #334155;
