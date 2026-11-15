@@ -65,7 +65,10 @@ export const App: React.FC = () => {
 
       <main style={{ flex: 1, paddingBottom: '40px' }}>
         {!currentUser ? (
-          <LandingPage onLoginSuccess={handleLoginSuccess} />
+          <LandingPage
+            onLoginSuccess={handleLoginSuccess}
+            defaultAdminOpen={typeof window !== 'undefined' && (window.location.pathname === '/admin' || window.location.hash === '#admin')}
+          />
         ) : currentUser.role === 'ELDER' ? (
           <ElderView />
         ) : currentUser.role === 'ADMIN' ? (

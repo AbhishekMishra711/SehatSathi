@@ -33,7 +33,7 @@ async function sendOtp(req, res, next) {
   try {
     const schema = z.object({
       email: z.string().email(),
-      purpose: z.enum(['REGISTER', 'RESET_CREDENTIAL']).default('REGISTER')
+      purpose: z.enum(['REGISTER', 'RESET_CREDENTIAL', 'ADMIN_LOGIN']).default('REGISTER')
     });
     const { email, purpose } = schema.parse(req.body);
     const normalizedEmail = email.toLowerCase().trim();
@@ -49,10 +49,17 @@ async function sendOtp(req, res, next) {
       });
     }
 
-    if (purpose === 'RESET_CREDENTIAL' && !existingUser) {
+    if ((purpose === 'RESET_CREDENTIAL' || purpose === 'ADMIN_LOGIN') && !existingUser) {
       return res.status(404).json({
         success: false,
         error: 'No account found with this email address.'
+      });
+    }
+
+    if (purpose === 'ADMIN_LOGIN' && existingUser.role !== 'ADMIN') {
+      return res.status(403).json({
+        success: false,
+        error: 'Unauthorized. This email is not registered as an administrator.'
       });
     }
 
@@ -60,7 +67,7 @@ async function sendOtp(req, res, next) {
 
     res.json({
       success: true,
-      message: `A 6-digit verification code has been dispatched to ${normalizedEmail}.`
+      message: `A 6-digit verification code has been dispatched to ${normalizedEmail}. Valid for 5 minutes.`
     });
   } catch (err) {
     next(err);
@@ -212,15 +219,16 @@ async function registerCaregiver(req, res, next) {
   }
 }
 
-// 4. Login (Elder PIN vs Caretaker/Admin Password)
+// 4. Login (Elder PIN vs Caretaker/Admin Password + Admin 2FA OTP)
 async function login(req, res, next) {
   try {
     const loginSchema = z.object({
       email: z.string().email(),
       pin: z.string().optional(),
-      password: z.string().optional()
+      password: z.string().optional(),
+      otp: z.string().optional()
     });
-    const { email, pin, password } = loginSchema.parse(req.body);
+    const { email, pin, password, otp } = loginSchema.parse(req.body);
 
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
@@ -280,6 +288,26 @@ async function login(req, res, next) {
           ? 'Too many failed attempts. Account locked for 15 minutes.'
           : 'Invalid credentials provided'
       });
+    }
+
+    // Two-Factor Authentication for Admin Panel
+    if (user.role === 'ADMIN') {
+      if (!otp) {
+        await otpService.createAndSendOtp(user.email, 'ADMIN_LOGIN');
+        return res.json({
+          success: true,
+          requiresOtp: true,
+          message: `Security 2FA code dispatched to ${user.email}. Valid for 5 minutes.`
+        });
+      }
+
+      const isOtpValid = await otpService.verifyOtp(user.email, otp.trim(), 'ADMIN_LOGIN');
+      if (!isOtpValid) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid or expired 6-digit admin verification code.'
+        });
+      }
     }
 
     await prisma.user.update({

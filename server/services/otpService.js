@@ -33,17 +33,21 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
 
   const subject = purpose === 'RESET_CREDENTIAL'
     ? 'SehatSathi - Your Password / PIN Reset Code'
+    : purpose === 'ADMIN_LOGIN'
+    ? 'SehatSathi Admin Security Code (Master Access)'
     : 'SehatSathi - Your Verification Code';
 
   const htmlText = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1.5px solid #76c893; border-radius: 12px; background-color: #FFFFFF;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1.5px solid #009F6B; border-radius: 12px; background-color: #FFFFFF;">
       ${mailer.getEmailBrandedHeader()}
-      <h3 style="color: #184e77; margin: 0 0 10px 0; font-size: 19px; font-weight: 800;">Security Verification Code</h3>
+      <h3 style="color: #009F6B; margin: 0 0 10px 0; font-size: 19px; font-weight: 800;">
+        ${purpose === 'ADMIN_LOGIN' ? 'Admin 2FA Verification Code' : 'Security Verification Code'}
+      </h3>
       <p style="font-size: 15px; color: #0F172A; line-height: 1.5; margin-bottom: 16px;">
-        Hello, use the following one-time verification code to complete your verification:
+        ${purpose === 'ADMIN_LOGIN' ? 'Use the following one-time code to authenticate your administrative master session:' : 'Hello, use the following one-time verification code to complete your verification:'}
       </p>
-      <div style="background-color: #F0FDF4; border: 2px dashed #52b69a; border-radius: 10px; padding: 20px; text-align: center; margin: 24px 0;">
-        <span style="font-size: 38px; font-weight: 800; letter-spacing: 8px; color: #184e77;">${otp}</span>
+      <div style="background-color: #F0FDF4; border: 2px dashed #00AC73; border-radius: 10px; padding: 20px; text-align: center; margin: 24px 0;">
+        <span style="font-size: 38px; font-weight: 800; letter-spacing: 8px; color: #009F6B;">${otp}</span>
       </div>
       <p style="font-size: 13px; color: #475569; line-height: 1.5;">
         This code is valid for <strong>5 minutes</strong>. If you did not request this, please disregard this email.

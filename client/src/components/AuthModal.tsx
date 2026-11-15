@@ -166,16 +166,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
     setSubmitLoading(true);
 
     try {
-      const payload = role === 'ELDER'
+      const payload: any = role === 'ELDER'
         ? { email, pin: credential }
         : { email, password: credential };
 
-      const res = await apiRequest<{ success: boolean; token: string; user: User }>('/api/auth/login', {
+      if (role === 'ADMIN' && otpSent && otp) {
+        payload.otp = otp;
+      }
+
+      const res = await apiRequest<{ success: boolean; token?: string; user?: User; requiresOtp?: boolean; message?: string }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(payload)
       });
 
-      if (res.success) {
+      if (res.requiresOtp) {
+        setOtpSent(true);
+        setCooldown(60);
+        setMessage(res.message || 'Security 2FA code dispatched to your registered email.');
+        return;
+      }
+
+      if (res.success && res.user && res.token) {
         onSuccess(res.user, res.token);
         onClose();
       }
@@ -438,9 +449,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               />
             </div>
 
+            {/* If Admin and OTP has been dispatched, render 6-digit OTP */}
+            {role === 'ADMIN' && otpSent && (
+              <SixDigitOtpInput value={otp} onChange={setOtp} />
+            )}
+
             <button
               type="submit"
-              disabled={submitLoading}
+              disabled={submitLoading || (role === 'ADMIN' && otpSent && otp.length < 6)}
               style={{
                 width: '100%',
                 padding: '14px 0',
@@ -453,7 +469,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 boxShadow: '0 4px 6px rgba(24, 78, 119, 0.2)'
               }}
             >
-              {submitLoading ? 'Signing in...' : 'Sign In'}
+              {submitLoading
+                ? 'Verifying...'
+                : role === 'ADMIN' && otpSent
+                ? 'Confirm & Enter Admin Console'
+                : role === 'ADMIN'
+                ? 'Verify Password & Request OTP'
+                : 'Sign In'}
             </button>
           </form>
         )}
