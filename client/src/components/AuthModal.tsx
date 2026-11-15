@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { apiRequest } from '../services/api';
 import { User, Role } from '../types';
-import { X, Mail, Key, Shield, AlertCircle, CheckCircle, ArrowRight, RotateCw } from 'lucide-react';
+import { X, Mail, Key, Shield, AlertCircle, CheckCircle, ArrowRight, RotateCw, Check } from 'lucide-react';
 
 interface AuthModalProps {
   initialRole: 'ELDER' | 'CARETAKER' | 'ADMIN';
@@ -9,6 +9,93 @@ interface AuthModalProps {
   onClose: () => void;
   onSuccess: (user: User, token: string) => void;
 }
+
+const SixDigitOtpInput: React.FC<{
+  value: string;
+  onChange: (val: string) => void;
+}> = ({ value, onChange }) => {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const digits = Array.from({ length: 6 }, (_, i) => value[i] || '');
+
+  const handleChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const char = e.target.value.replace(/[^0-9]/g, '').slice(-1);
+    const newDigits = [...digits];
+    newDigits[index] = char;
+    const combined = newDigits.join('');
+    onChange(combined);
+
+    if (char && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !digits[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+    if (pasted) {
+      onChange(pasted);
+      const focusIndex = Math.min(pasted.length, 5);
+      inputRefs.current[focusIndex]?.focus();
+    }
+  };
+
+  return (
+    <div style={{ margin: '16px 0 16px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--c-deep-ocean)' }}>
+          Enter 6-Digit Verification Code
+        </label>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--c-teal-green)' }}>
+          Valid for 10 min
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <input
+            key={i}
+            ref={el => { inputRefs.current[i] = el; }}
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={digits[i] || ''}
+            onChange={(e) => handleChange(i, e)}
+            onKeyDown={(e) => handleKeyDown(i, e)}
+            onPaste={handlePaste}
+            style={{
+              width: '100%',
+              maxWidth: '54px',
+              height: '52px',
+              textAlign: 'center',
+              fontSize: '1.35rem',
+              fontWeight: 800,
+              color: 'var(--c-deep-ocean)',
+              backgroundColor: digits[i] ? '#F0FDF4' : '#F8FAFC',
+              border: digits[i] ? '2px solid var(--c-teal-green)' : '1.5px solid var(--border-strong)',
+              borderRadius: '10px',
+              outline: 'none',
+              transition: 'all 0.15s ease'
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--c-ocean-teal)';
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(22, 138, 173, 0.2)';
+              e.currentTarget.select();
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = digits[i] ? 'var(--c-teal-green)' : 'var(--border-strong)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClose, onSuccess }) => {
   const [view, setView] = useState<'LOGIN' | 'REGISTER' | 'FORGOT'>('LOGIN');
@@ -423,22 +510,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               </div>
             </div>
 
-            {/* 6-Digit OTP Box */}
+            {/* 6-Digit Modern Segmented OTP Component */}
             {otpSent && (
-              <div style={{ marginBottom: '14px', backgroundColor: 'var(--c-lime)', padding: '14px', borderRadius: '8px', border: '1px solid var(--c-mint)' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
-                  Enter 6-Digit Code Received on Email
-                </label>
-                <input
-                  type="text"
-                  required
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.trim())}
-                  placeholder="Enter 6-digit OTP"
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '2px solid var(--c-deep-ocean)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '4px' }}
-                />
-              </div>
+              <SixDigitOtpInput value={otp} onChange={setOtp} />
             )}
 
             {/* PIN or Password */}
@@ -564,20 +638,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
 
             {otpSent && (
               <>
-                <div style={{ marginBottom: '14px', backgroundColor: 'var(--c-lime)', padding: '14px', borderRadius: '8px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
-                    Enter 6-Digit Code Received on Email
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.trim())}
-                    placeholder="123456"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '2px solid var(--c-deep-ocean)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '4px' }}
-                  />
-                </div>
+                <SixDigitOtpInput value={otp} onChange={setOtp} />
 
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>

@@ -60,10 +60,48 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* Entrance Animations */
+@keyframes logoEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(38px) scale(0.8);
+    filter: drop-shadow(0 0 0 rgba(82, 182, 154, 0));
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.06);
+    filter: drop-shadow(0 8px 16px rgba(82, 182, 154, 0.4));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 2px 6px rgba(82, 182, 154, 0.15));
+  }
+}
+
+@keyframes titleSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(28px);
   }
   to {
     opacity: 1;
@@ -85,12 +123,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   to { opacity: 1; }
 }
 
+.animate-logo-entrance {
+  animation: logoEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-title-slide {
+  animation: titleSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
 .animate-hero {
-  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-card {
@@ -99,6 +146,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .logo-pulse:hover {
   animation: pulseLogo 1.5s infinite ease-in-out;
+}
+
+.floating-icon {
+  animation: floatGentle 3s ease-in-out infinite;
 }
 
 /* Scroll reveal helper */

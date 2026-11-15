@@ -36,15 +36,14 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
     : 'SehatSathi - Your Verification Code';
 
   const htmlText = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1px solid #76c893; border-radius: 12px; background-color: #FFFFFF;">
-      <div style="border-bottom: 2px solid #184e77; padding-bottom: 14px; margin-bottom: 18px;">
-        <h2 style="color: #184e77; margin: 0; font-size: 22px; font-weight: 800;">SehatSathi Security Verification</h2>
-      </div>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1.5px solid #76c893; border-radius: 12px; background-color: #FFFFFF;">
+      ${mailer.getEmailBrandedHeader()}
+      <h3 style="color: #184e77; margin: 0 0 10px 0; font-size: 19px; font-weight: 800;">Security Verification Code</h3>
       <p style="font-size: 15px; color: #0F172A; line-height: 1.5; margin-bottom: 16px;">
         Hello, use the following one-time verification code to complete your verification:
       </p>
       <div style="background-color: #F0FDF4; border: 2px dashed #52b69a; border-radius: 10px; padding: 20px; text-align: center; margin: 24px 0;">
-        <span style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #184e77;">${otp}</span>
+        <span style="font-size: 38px; font-weight: 800; letter-spacing: 8px; color: #184e77;">${otp}</span>
       </div>
       <p style="font-size: 13px; color: #475569; line-height: 1.5;">
         This code is valid for <strong>10 minutes</strong>. If you did not request this, please disregard this email.
@@ -67,7 +66,14 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
 
   if (!mailResult.success) {
     console.error(`[OTP Error] Email delivery to ${normalizedEmail} failed:`, mailResult.error);
-    throw new Error(`Email delivery failed: ${mailResult.error || 'Resend provider error'}. (Note: On Resend free tier, you must use the email address registered on your Resend account, or verify your domain).`);
+    const errText = mailResult.error || '';
+    if (errText.toLowerCase().includes('testing emails') || errText.toLowerCase().includes('verify a domain')) {
+      throw new Error(
+        `Resend Free Sandbox restriction: Can only send to ${config.emailFrom.includes('resend.dev') ? 'registered account email' : 'verified domain'}. ` +
+        `To send to ANY email address (e.g. ${normalizedEmail}) 100% free with NO credit card, configure free Gmail SMTP in .env (add GMAIL_USER and GMAIL_APP_PASSWORD).`
+      );
+    }
+    throw new Error(`Email delivery failed: ${mailResult.error || 'Mail provider error'}`);
   }
 
   return { success: true };

@@ -135,26 +135,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
         zIndex: 100,
         boxShadow: '0 2px 10px rgba(24, 78, 119, 0.05)'
       }}>
-        {/* Logo and Brand Name with animated entrance */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} className="animate-fade-in">
+        {/* Logo and Brand Name with animated entrance from below */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <img
             src="/logo.svg"
             alt="SehatSathi Care Logo"
-            className="logo-pulse"
-            style={{ width: '42px', height: '42px', objectFit: 'contain' }}
+            className="animate-logo-entrance logo-pulse"
+            style={{ width: '46px', height: '46px', objectFit: 'contain' }}
           />
-          <div>
+          <div className="animate-title-slide">
             <span style={{
-              fontSize: '1.45rem',
+              fontSize: '1.55rem',
               fontWeight: 800,
               color: 'var(--c-deep-ocean)',
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.025em',
               display: 'block',
               lineHeight: 1.1
             }}>
               SehatSathi
             </span>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--c-teal-green)', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--c-teal-green)', letterSpacing: '0.6px' }}>
               DIGNIFIED SENIOR CARE
             </span>
           </div>
@@ -198,85 +198,205 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
         </div>
       </nav>
 
-      {/* Hero Section with High-Contrast Typography & Animations */}
+      {/* Hero Section with High-Contrast Typography & Unified Dual-Portal Console */}
       <section style={{
-        maxWidth: '1100px',
+        maxWidth: '1120px',
         margin: '0 auto',
-        padding: '64px 20px 48px 20px',
+        padding: '56px 20px 48px 20px',
         textAlign: 'center'
       }} className="animate-hero">
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '8px 18px',
-          borderRadius: '24px',
+          padding: '8px 20px',
+          borderRadius: '30px',
           backgroundColor: 'var(--c-lime)',
           color: 'var(--c-deep-ocean)',
-          fontSize: '0.9rem',
+          fontSize: '0.92rem',
           fontWeight: 800,
-          marginBottom: '24px',
-          border: '1px solid var(--c-mint)'
+          marginBottom: '26px',
+          border: '1px solid var(--c-mint)',
+          boxShadow: '0 2px 8px rgba(181, 228, 140, 0.4)'
         }}>
-          <ShieldCheck size={18} color="var(--c-deep-ocean)" />
+          <ShieldCheck size={19} color="var(--c-deep-ocean)" />
           <span>Patient-Centered Elderly Care & Medication Management</span>
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(2.4rem, 5vw, 3.5rem)',
+          fontSize: 'clamp(2.7rem, 6.2vw, 4.2rem)',
           fontWeight: 800,
-          color: 'var(--c-deep-ocean)',
-          letterSpacing: '-0.03em',
-          lineHeight: 1.15,
-          maxWidth: '880px',
-          margin: '0 auto 20px auto'
+          letterSpacing: '-0.035em',
+          lineHeight: 1.12,
+          maxWidth: '920px',
+          margin: '0 auto 22px auto'
         }}>
-          Dignified healthcare for seniors. Peace of mind for families.
+          <span style={{ color: 'var(--c-deep-ocean)', display: 'block' }}>
+            Dignified Healthcare for Seniors.
+          </span>
+          <span style={{ color: 'var(--c-ocean-teal)', display: 'block' }}>
+            Peace of Mind for Families.
+          </span>
         </h1>
 
         <p style={{
-          fontSize: '1.2rem',
+          fontSize: '1.25rem',
           fontWeight: 500,
           color: 'var(--text-muted)',
-          maxWidth: '740px',
-          margin: '0 auto 36px auto',
+          maxWidth: '760px',
+          margin: '0 auto 40px auto',
           lineHeight: 1.6
         }}>
           SehatSathi empowers seniors with an accessible, high-contrast mobile interface, voice audio assistant, 
           and an intelligent escalation chain that keeps family notified when doses are missed.
         </p>
 
-        {/* Hero CTA buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setModalRole('ELDER')}
-            style={{
-              padding: '16px 36px',
-              borderRadius: '10px',
-              backgroundColor: 'var(--c-teal-green)',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '1.1rem',
-              boxShadow: '0 6px 16px rgba(82, 182, 154, 0.35)'
-            }}
-          >
-            I am a Senior Patient
-          </button>
+        {/* Unified Dual-Portal Console with Invisible Partition */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '20px',
+          border: '1.5px solid var(--border-color)',
+          boxShadow: '0 12px 30px -10px rgba(24, 78, 119, 0.12)',
+          maxWidth: '880px',
+          margin: '0 auto',
+          overflow: 'hidden',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+        }}>
+          {/* Senior Patient Side */}
+          <div style={{
+            padding: '36px 32px',
+            textAlign: 'left',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            borderRight: '1px solid var(--border-color)',
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #F9FCF9 100%)'
+          }}>
+            <div>
+              <span style={{
+                display: 'inline-block',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                padding: '4px 12px',
+                borderRadius: '12px',
+                backgroundColor: 'var(--c-lime)',
+                color: 'var(--c-deep-ocean)',
+                marginBottom: '14px'
+              }}>
+                SENIOR PATIENT PORTAL
+              </span>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '10px' }}>
+                Simple, Dignified Senior View
+              </h2>
+              <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
+                Designed specifically for aging eyes and simple touch. No complex forms or confusing steps.
+              </p>
 
-          <button
-            onClick={() => setModalRole('CARETAKER')}
-            style={{
-              padding: '16px 36px',
-              borderRadius: '10px',
-              backgroundColor: 'var(--c-deep-ocean)',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '1.1rem',
-              boxShadow: '0 6px 16px rgba(24, 78, 119, 0.25)'
-            }}
-          >
-            I am a Caretaker or Family Member
-          </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={18} color="var(--c-teal-green)" />
+                  <span>One-touch 4-digit PIN access</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={18} color="var(--c-teal-green)" />
+                  <span>Sathi Voice & Audio Assistant for medications</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={18} color="var(--c-teal-green)" />
+                  <span>Full control to grant or revoke caretaker links</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setModalRole('ELDER')}
+              style={{
+                width: '100%',
+                padding: '16px 24px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--c-teal-green)',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                fontSize: '1.05rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(82, 182, 154, 0.35)'
+              }}
+            >
+              <span>Enter as Senior Patient</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
+
+          {/* Caretaker & Family Side */}
+          <div style={{
+            padding: '36px 32px',
+            textAlign: 'left',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 100%)'
+          }}>
+            <div>
+              <span style={{
+                display: 'inline-block',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                padding: '4px 12px',
+                borderRadius: '12px',
+                backgroundColor: 'var(--c-mint-light)',
+                color: 'var(--c-deep-ocean)',
+                marginBottom: '14px'
+              }}>
+                CARE CIRCLE & FAMILY
+              </span>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '10px' }}>
+                Intelligent Safety Net
+              </h2>
+              <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
+                Real-time visibility into medication adherence, doctor visits, and multi-tier escalation warnings.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={18} color="var(--c-ocean-teal)" />
+                  <span>3-tier automated missed dose escalation</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={18} color="var(--c-ocean-teal)" />
+                  <span>Gemini-powered prescription schedule parser</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={18} color="var(--c-ocean-teal)" />
+                  <span>Complete tamper-evident audit history</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setModalRole('CARETAKER')}
+              style={{
+                width: '100%',
+                padding: '16px 24px',
+                borderRadius: '10px',
+                backgroundColor: 'var(--c-deep-ocean)',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                fontSize: '1.05rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(24, 78, 119, 0.25)'
+              }}
+            >
+              <span>Enter as Caretaker / Family</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
         </div>
       </section>
 

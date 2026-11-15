@@ -25,13 +25,14 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
         <img
           src="/logo.svg"
           alt="SehatSathi Care Logo"
-          style={{ width: '38px', height: '38px', objectFit: 'contain' }}
+          className="animate-logo-entrance logo-pulse"
+          style={{ width: '40px', height: '40px', objectFit: 'contain' }}
         />
-        <div>
-          <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em', display: 'block', lineHeight: 1.1 }}>
+        <div className="animate-title-slide">
+          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em', display: 'block', lineHeight: 1.1 }}>
             SehatSathi
           </span>
-          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--c-teal-green)' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--c-teal-green)' }}>
             DIGNIFIED SENIOR CARE
           </span>
         </div>
