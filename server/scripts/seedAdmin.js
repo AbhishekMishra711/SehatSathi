@@ -34,3 +34,4 @@ seedAdmin().catch(err => {
   console.error('[Seed Admin Error]', err);
   process.exit(1);
 });
+
