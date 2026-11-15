@@ -42,6 +42,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isSectionRevealed, setIsSectionRevealed] = useState(false);
 
+  // Close modals on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowPrivacyModal(false);
+        setActiveFeatureModal(null);
+        setModalRole(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -130,158 +143,135 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
   ];
 
   return (
-    <div style={{
+    <div className="bg-subtle-grid" style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
       overflowX: 'hidden'
     }}>
-      {/* Ambient Lighting Orbs (Consulto / Surgico style soft blur mesh) */}
-      <div style={{
-        position: 'absolute',
-        top: '-100px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '900px',
-        height: '480px',
-        background: 'radial-gradient(ellipse at center, rgba(186, 230, 253, 0.45) 0%, rgba(209, 250, 229, 0.35) 45%, rgba(250, 252, 251, 0) 75%)',
-        filter: 'blur(60px)',
-        pointerEvents: 'none',
-        zIndex: 0
-      }} />
-
-      {/* Floating Frosted-Glass Modern Navbar (Like Consulto & SmartCare) */}
-      <nav className="glass-nav" style={{
-        padding: '16px 48px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+      {/* Floating Capsule Navbar (Containerized & Centered, Like Apple / Modern SaaS) */}
+      <header style={{
         position: 'sticky',
-        top: 0,
+        top: '16px',
         zIndex: 100,
-        boxShadow: '0 4px 20px -2px rgba(15, 23, 42, 0.04)'
+        maxWidth: '1240px',
+        width: 'calc(100% - 32px)',
+        margin: '12px auto 0 auto'
       }}>
-        {/* Brand Logo & Editorial Typography */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <img
-            src="/logo.png"
-            alt="SehatSathi Care Logo"
-            className="animate-logo-entrance logo-pulse"
-            style={{
-              width: '48px',
-              height: '48px',
-              objectFit: 'contain'
-            }}
-          />
-          <div className="animate-title-slide">
-            <span style={{
-              fontSize: '1.55rem',
-              fontWeight: 800,
-              color: '#0F172A',
-              letterSpacing: '-0.025em',
-              display: 'block',
-              lineHeight: 1.1
-            }}>
-              SehatSathi
-            </span>
-            <span style={{
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              color: '#00A86B',
-              letterSpacing: '0.8px'
-            }}>
-              DIGNIFIED SENIOR CARE
-            </span>
-          </div>
-        </div>
-
-        {/* Center Minimal Navigation Links (Consulto Style) */}
-        <div style={{
+        <nav className="floating-capsule-nav" style={{
+          padding: '10px 24px',
           display: 'flex',
           alignItems: 'center',
-          gap: '28px'
+          justifyContent: 'space-between',
+          gap: '16px'
         }}>
-          <button
-            onClick={() => {
-              const el = document.getElementById('features-section');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            style={{
-              fontSize: '0.94rem',
-              fontWeight: 600,
-              color: '#475569',
-              cursor: 'pointer'
-            }}
-          >
-            Features
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById('escalation-section');
-              el?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            style={{
-              fontSize: '0.94rem',
-              fontWeight: 600,
-              color: '#475569',
-              cursor: 'pointer'
-            }}
-          >
-            Escalation Protocol
-          </button>
-          <button
-            onClick={() => setShowPrivacyModal(true)}
-            style={{
-              fontSize: '0.94rem',
-              fontWeight: 600,
-              color: '#475569',
-              cursor: 'pointer'
-            }}
-          >
-            Safety & Privacy
-          </button>
-        </div>
+          {/* Brand Logo & Editorial Typography */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img
+              src="/logo.png"
+              alt="SehatSathi Care Logo"
+              className="animate-logo-entrance logo-pulse"
+              style={{
+                width: '42px',
+                height: '42px',
+                objectFit: 'contain'
+              }}
+            />
+            <div className="animate-title-slide">
+              <span style={{
+                fontSize: '1.4rem',
+                fontWeight: 800,
+                color: '#0F172A',
+                letterSpacing: '-0.025em',
+                display: 'block',
+                lineHeight: 1.1
+              }}>
+                SehatSathi
+              </span>
+              <span style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                color: '#00A86B',
+                letterSpacing: '0.8px'
+              }}>
+                DIGNIFIED SENIOR CARE
+              </span>
+            </div>
+          </div>
 
-        {/* Action CTAs (Pill-shaped buttons like in Consulto & SmartCare) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={() => setModalRole('ELDER')}
-            style={{
-              padding: '10px 22px',
-              borderRadius: '9999px',
-              backgroundColor: '#E8F8EE',
-              border: '1px solid #A7F3D0',
-              color: '#00875A',
-              fontWeight: 700,
-              fontSize: '0.92rem',
-              cursor: 'pointer'
-            }}
-          >
-            Patient Access
-          </button>
+          {/* Center Minimal Navigation Links with Hover Pill Styles */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <button
+              onClick={() => {
+                const el = document.getElementById('features-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="nav-link"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => {
+                const el = document.getElementById('escalation-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="nav-link"
+            >
+              Escalation Protocol
+            </button>
+            <button
+              onClick={() => setShowPrivacyModal(true)}
+              className="nav-link"
+            >
+              Safety & Privacy
+            </button>
+          </div>
 
-          <button
-            onClick={() => setModalRole('CARETAKER')}
-            style={{
-              padding: '10px 24px',
-              borderRadius: '9999px',
-              backgroundColor: '#0F172A',
-              color: '#FFFFFF',
-              fontWeight: 700,
-              fontSize: '0.92rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.15)'
-            }}
-          >
-            <span>Caretaker Portal</span>
-            <ArrowRight size={16} />
-          </button>
-        </div>
-      </nav>
+          {/* Action CTAs */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              onClick={() => setModalRole('ELDER')}
+              style={{
+                padding: '9px 20px',
+                borderRadius: '9999px',
+                backgroundColor: '#E8F8EE',
+                border: '1px solid #A7F3D0',
+                color: '#00875A',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              Patient Access
+            </button>
+
+            <button
+              onClick={() => setModalRole('CARETAKER')}
+              style={{
+                padding: '9px 22px',
+                borderRadius: '9999px',
+                backgroundColor: '#0F172A',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)'
+              }}
+            >
+              <span>Caretaker Portal</span>
+              <ArrowRight size={15} />
+            </button>
+          </div>
+        </nav>
+      </header>
 
       {/* Hero Section: Modern, Breathable & Editorial (Consulto + SmartCare feel) */}
       <section style={{
@@ -1104,36 +1094,44 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
       {/* Safety & Privacy Specification Modal */}
       {showPrivacyModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.45)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px',
-          zIndex: 1200
-        }}>
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '24px',
-            maxWidth: '620px',
-            width: '100%',
-            padding: '36px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            border: '1px solid rgba(226, 232, 240, 0.9)',
-            boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.15)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '22px' }}>
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowPrivacyModal(false);
+          }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.5)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            zIndex: 1200
+          }}
+        >
+          <div 
+            className="no-scrollbar"
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '24px',
+              maxWidth: '720px',
+              width: '100%',
+              padding: '32px 36px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              border: '1px solid rgba(226, 232, 240, 0.95)',
+              boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.25)'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
               <div>
                 <span style={{
-                  fontSize: '0.78rem',
+                  fontSize: '0.76rem',
                   fontWeight: 800,
                   padding: '4px 12px',
                   borderRadius: '9999px',
@@ -1143,59 +1141,140 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   marginBottom: '8px',
                   border: '1px solid #A7F3D0'
                 }}>
-                  PATIENT PROTECTION & PRIVACY
+                  PATIENT PROTECTION & PRIVACY GUARANTEE
                 </span>
-                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>
                   Safety & Privacy First
                 </h2>
               </div>
               <button
                 onClick={() => setShowPrivacyModal(false)}
-                style={{ padding: '6px', color: '#64748B', cursor: 'pointer' }}
+                style={{
+                  padding: '6px',
+                  color: '#64748B',
+                  borderRadius: '50%',
+                  backgroundColor: '#F1F5F9',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
                 aria-label="Close dialog"
               >
-                <X size={22} />
+                <X size={18} />
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
-                <KeyRound size={22} color="#00A86B" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Elder-Controlled Caregiver Access</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>Seniors generate a private Patient Link Code. Caregivers cannot access without explicit permission, and seniors can revoke access anytime with one tap.</p>
+            {/* Well-Structured 2-Column Bento Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '12px',
+              marginTop: '16px'
+            }}>
+              {/* Card 1 */}
+              <div style={{
+                padding: '16px 18px',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#E8F8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <KeyRound size={18} color="#00A86B" />
+                  </div>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Elder-Controlled Access</h4>
                 </div>
+                <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                  Seniors generate a private Patient Link Code. Caregivers cannot access without explicit permission, and seniors can revoke access anytime with one tap.
+                </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
-                <Lock size={22} color="#0284C7" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>100% Cryptographic Credential Hashing</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>Senior PINs and caregiver passwords are encrypted with Bcrypt. Raw PINs or passwords are never visible or stored in plaintext.</p>
+              {/* Card 2 */}
+              <div style={{
+                padding: '16px 18px',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Lock size={18} color="#0284C7" />
+                  </div>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Zero-Plaintext Hashing</h4>
                 </div>
+                <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                  Senior PINs and caregiver passwords are encrypted with 10 salt rounds of Bcrypt. Raw credentials are never stored or exposed in plaintext.
+                </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
-                <Clock size={22} color="#00A86B" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Strict 5-Minute Single-Use Verification Codes</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>All email authentication codes automatically expire after 5 minutes and are destroyed immediately upon verification to eliminate code replay.</p>
+              {/* Card 3 */}
+              <div style={{
+                padding: '16px 18px',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Clock size={18} color="#D97706" />
+                  </div>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>5-Minute Single-Use OTP</h4>
                 </div>
+                <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                  All email verification codes automatically expire after 5 minutes and are destroyed upon single verification to eliminate replay attacks.
+                </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
-                <ShieldCheck size={22} color="#D97706" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>60-Second Cooldown & 15-Minute Brute-Force Lockout</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>60-second cooldown timer prevents email spamming, and automatic 15-minute account lockouts trigger after 5 consecutive failed attempts.</p>
+              {/* Card 4 */}
+              <div style={{
+                padding: '16px 18px',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <ShieldCheck size={18} color="#9333EA" />
+                  </div>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Brute-Force Lockout</h4>
                 </div>
+                <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                  60-second cooldown timer prevents email spamming, and automatic 15-minute account lockouts trigger after 5 consecutive failed attempts.
+                </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
-                <Eye size={22} color="#0284C7" style={{ flexShrink: 0, marginTop: '2px' }} />
+              {/* Card 5 - Full Width Span */}
+              <div style={{
+                gridColumn: '1 / -1',
+                padding: '16px 20px',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '14px'
+              }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                  <Eye size={18} color="#15803D" />
+                </div>
                 <div>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Tamper-Evident Medical Audit Trail</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>Every dose marked taken, doctor appointment scheduled, or safety alert dispatched is immutably logged with an authentic timestamp and actor identity.</p>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Tamper-Evident Medical Audit Trail</h4>
+                  <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                    Every dose marked taken, doctor appointment scheduled, or safety alert dispatched is permanently logged with an authentic timestamp and actor identity.
+                  </p>
                 </div>
               </div>
             </div>
@@ -1203,14 +1282,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             <button
               onClick={() => setShowPrivacyModal(false)}
               style={{
-                marginTop: '26px',
+                marginTop: '22px',
                 width: '100%',
-                padding: '14px 0',
+                padding: '13px 0',
                 borderRadius: '12px',
                 backgroundColor: '#0F172A',
                 color: '#FFFFFF',
                 fontWeight: 700,
-                fontSize: '0.98rem',
+                fontSize: '0.96rem',
                 border: 'none',
                 cursor: 'pointer'
               }}
@@ -1223,30 +1302,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
       {/* Detail Modal for Feature "Read More" */}
       {activeFeatureModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.45)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px',
-          zIndex: 1100
-        }}>
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '20px',
-            maxWidth: '520px',
-            width: '100%',
-            padding: '32px',
-            border: '1px solid rgba(226, 232, 240, 0.9)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)'
-          }}>
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActiveFeatureModal(null);
+          }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.5)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            zIndex: 1100
+          }}
+        >
+          <div 
+            className="no-scrollbar"
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '24px',
+              maxWidth: '520px',
+              width: '100%',
+              padding: '32px',
+              border: '1px solid rgba(226, 232, 240, 0.95)',
+              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
               <div>
                 <span style={{

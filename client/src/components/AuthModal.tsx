@@ -287,32 +287,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.45)',
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '16px',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '24px',
-        width: '100%',
-        maxWidth: '460px',
-        padding: '32px',
-        maxHeight: '92vh',
-        overflowY: 'auto',
-        border: '1px solid rgba(226, 232, 240, 0.9)',
-        boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.18)'
-      }}>
+    <div 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.5)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+        zIndex: 1000
+      }}
+    >
+      <div 
+        className="no-scrollbar"
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '24px',
+          width: '100%',
+          maxWidth: '460px',
+          padding: '32px',
+          maxHeight: '92vh',
+          overflowY: 'auto',
+          border: '1px solid rgba(226, 232, 240, 0.95)',
+          boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.22)'
+        }}
+      >
         {/* Header bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
           <div>
