@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiRequest } from '../services/api';
 import { User, Role } from '../types';
-import { X, Mail, Key, Shield, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { X, Mail, Key, Shield, AlertCircle, CheckCircle, ArrowRight, RotateCw } from 'lucide-react';
 
 interface AuthModalProps {
   initialRole: 'ELDER' | 'CARETAKER' | 'ADMIN';
@@ -32,6 +32,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
+  // 60-Second Cooldown Timer for OTP Resend
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer: any = null;
+    if (cooldown > 0) {
+      timer = setInterval(() => {
+        setCooldown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   if (!isOpen) return null;
 
   const handleSendOtp = async (purpose: 'REGISTER' | 'RESET_CREDENTIAL') => {
@@ -50,12 +63,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
       });
       if (res.success) {
         setOtpSent(true);
-        if ((res as any).devOtp) {
-          setOtp((res as any).devOtp);
-          setMessage(`Verification code dispatched to ${email}. [Code auto-filled: ${(res as any).devOtp}]`);
-        } else {
-          setMessage(`Verification code dispatched to ${email}. Please check your inbox.`);
-        }
+        setCooldown(60); // Start 60-second timer
+        setMessage(`Verification code dispatched to ${email}. Please check your inbox.`);
       }
     } catch (err: any) {
       setError(err.message || 'Could not send verification code.');
@@ -94,6 +103,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
     e.preventDefault();
     if (!otpSent) {
       setError('Please request a verification code first.');
+      return;
+    }
+    if (!otp.trim()) {
+      setError('Please enter the 6-digit code sent to your email.');
       return;
     }
     setError(null);
@@ -144,6 +157,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
 
   const handleResetCredential = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!otp.trim()) {
+      setError('Please enter the verification code sent to your email.');
+      return;
+    }
     setError(null);
     setSubmitLoading(true);
 
@@ -158,7 +175,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
       });
 
       if (res.success) {
-        setMessage('Credentials reset successfully! Please sign in with your new PIN/password.');
+        setMessage('Credentials reset successfully. Please sign in with your new PIN/password.');
         setView('LOGIN');
         setOtpSent(false);
         setCredential('');
@@ -178,7 +195,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
+      backgroundColor: 'rgba(24, 78, 119, 0.45)',
+      backdropFilter: 'blur(4px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -187,30 +205,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
     }}>
       <div style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: '12px',
+        borderRadius: '16px',
         width: '100%',
         maxWidth: '460px',
-        padding: '28px',
+        padding: '30px',
         maxHeight: '92vh',
         overflowY: 'auto',
-        border: '1px solid var(--border-color)',
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+        border: '2px solid var(--c-mint)',
+        boxShadow: '0 25px 50px -12px rgba(24, 78, 119, 0.25)'
       }}>
         {/* Header bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
           <div>
             <span style={{
               fontSize: '0.78rem',
-              fontWeight: 700,
-              padding: '3px 8px',
+              fontWeight: 800,
+              padding: '4px 10px',
               borderRadius: '12px',
-              backgroundColor: 'var(--primary-light)',
+              backgroundColor: 'var(--c-mint-light)',
               color: 'var(--c-deep-ocean)'
             }}>
               {role === 'ELDER' ? 'Senior Patient Portal' : role === 'ADMIN' ? 'Administration Portal' : 'Caregiver & Family Portal'}
             </span>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginTop: '4px' }}>
-              {view === 'LOGIN' ? 'Sign In' : view === 'REGISTER' ? 'Register Account' : 'Reset Credentials'}
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginTop: '6px' }}>
+              {view === 'LOGIN' ? 'Welcome Back' : view === 'REGISTER' ? 'Create Account' : 'Reset Credentials'}
             </h2>
           </div>
           <button
@@ -224,16 +242,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
 
         {/* View Switcher Tabs (Login vs Register) */}
         {role !== 'ADMIN' && view !== 'FORGOT' && (
-          <div style={{ display: 'flex', borderBottom: '2px solid var(--border-color)', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', borderBottom: '2px solid var(--border-color)', marginBottom: '22px' }}>
             <button
               onClick={() => { setView('LOGIN'); setError(null); }}
               style={{
                 flex: 1,
-                padding: '10px 0',
-                fontWeight: 700,
-                fontSize: '0.92rem',
+                padding: '12px 0',
+                fontWeight: 800,
+                fontSize: '0.95rem',
                 color: view === 'LOGIN' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
-                borderBottom: view === 'LOGIN' ? '3px solid var(--c-deep-ocean)' : 'none'
+                borderBottom: view === 'LOGIN' ? '3px solid var(--c-teal-green)' : 'none'
               }}
             >
               Sign In
@@ -242,14 +260,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               onClick={() => { setView('REGISTER'); setError(null); }}
               style={{
                 flex: 1,
-                padding: '10px 0',
-                fontWeight: 700,
-                fontSize: '0.92rem',
+                padding: '12px 0',
+                fontWeight: 800,
+                fontSize: '0.95rem',
                 color: view === 'REGISTER' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
-                borderBottom: view === 'REGISTER' ? '3px solid var(--c-deep-ocean)' : 'none'
+                borderBottom: view === 'REGISTER' ? '3px solid var(--c-teal-green)' : 'none'
               }}
             >
-              Register New
+              New Registration
             </button>
           </div>
         )}
@@ -258,16 +276,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
         {error && (
           <div style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             gap: '8px',
             backgroundColor: 'var(--status-missed-bg)',
             color: 'var(--status-missed)',
-            padding: '10px 14px',
-            borderRadius: '6px',
+            padding: '12px 14px',
+            borderRadius: '8px',
             fontSize: '0.88rem',
-            marginBottom: '16px'
+            marginBottom: '16px',
+            lineHeight: 1.4
           }}>
-            <AlertCircle size={16} />
+            <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
             <span>{error}</span>
           </div>
         )}
@@ -277,14 +296,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            backgroundColor: 'var(--status-taken-bg)',
-            color: 'var(--status-taken)',
-            padding: '10px 14px',
-            borderRadius: '6px',
+            backgroundColor: '#DCFCE7',
+            color: '#15803D',
+            padding: '12px 14px',
+            borderRadius: '8px',
             fontSize: '0.88rem',
             marginBottom: '16px'
           }}>
-            <CheckCircle size={16} />
+            <CheckCircle size={18} />
             <span>{message}</span>
           </div>
         )}
@@ -292,8 +311,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
         {/* 1. LOGIN FORM */}
         {view === 'LOGIN' && (
           <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '6px', color: 'var(--c-deep-ocean)' }}>
                 Email Address
               </label>
               <input
@@ -302,20 +321,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your.email@example.com"
-                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
               />
             </div>
 
             <div style={{ marginBottom: '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                  {role === 'ELDER' ? '4-Digit Senior PIN' : 'Password'}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-deep-ocean)' }}>
+                  {role === 'ELDER' ? '4-Digit Senior PIN' : 'Account Password'}
                 </label>
                 {role !== 'ADMIN' && (
                   <button
                     type="button"
                     onClick={() => { setView('FORGOT'); setError(null); }}
-                    style={{ fontSize: '0.78rem', color: 'var(--c-ocean-teal)', fontWeight: 600 }}
+                    style={{ fontSize: '0.8rem', color: 'var(--c-ocean-teal)', fontWeight: 700 }}
                   >
                     Forgot {role === 'ELDER' ? 'PIN' : 'Password'}?
                   </button>
@@ -328,7 +347,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 value={credential}
                 onChange={(e) => setCredential(e.target.value)}
                 placeholder={role === 'ELDER' ? '4-digit PIN' : 'Password'}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
               />
             </div>
 
@@ -337,13 +356,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               disabled={submitLoading}
               style={{
                 width: '100%',
-                padding: '12px 0',
-                borderRadius: '6px',
+                padding: '14px 0',
+                borderRadius: '8px',
                 backgroundColor: 'var(--c-deep-ocean)',
                 color: '#FFFFFF',
-                fontWeight: 700,
+                fontWeight: 800,
                 fontSize: '1rem',
-                marginTop: '16px'
+                marginTop: '18px',
+                boxShadow: '0 4px 6px rgba(24, 78, 119, 0.2)'
               }}
             >
               {submitLoading ? 'Signing in...' : 'Sign In'}
@@ -351,11 +371,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
           </form>
         )}
 
-        {/* 2. REGISTRATION FORM WITH EMAIL OTP */}
+        {/* 2. REGISTRATION FORM WITH REAL EMAIL OTP & 60-SEC RESEND TIMER */}
         {view === 'REGISTER' && (
           <form onSubmit={handleRegister}>
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
                 Full Name
               </label>
               <input
@@ -364,13 +384,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={role === 'ELDER' ? 'e.g. Ramesh Sharma' : 'e.g. Aarav Sharma'}
-                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
               />
             </div>
 
-            {/* Email + Send OTP button */}
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+            {/* Email + Send/Resend OTP button with 60s cooldown */}
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
                 Email Address
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -378,52 +398,53 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                   type="email"
                   required
                   value={email}
-                  disabled={otpSent}
+                  disabled={otpSent && cooldown > 0}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your.email@example.com"
-                  style={{ flex: 1, padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
                 />
                 <button
                   type="button"
                   onClick={() => handleSendOtp('REGISTER')}
-                  disabled={otpLoading || otpSent}
+                  disabled={otpLoading || cooldown > 0}
                   style={{
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    backgroundColor: 'var(--c-ocean-teal)',
-                    color: '#FFFFFF',
-                    fontSize: '0.82rem',
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    backgroundColor: cooldown > 0 ? '#E2E8F0' : 'var(--c-teal-green)',
+                    color: cooldown > 0 ? '#64748B' : '#FFFFFF',
+                    fontSize: '0.85rem',
                     fontWeight: 700,
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    cursor: cooldown > 0 ? 'not-allowed' : 'pointer'
                   }}
                 >
-                  {otpLoading ? 'Sending...' : otpSent ? 'Code Sent' : 'Send Code'}
+                  {otpLoading ? 'Sending...' : cooldown > 0 ? `Resend (${cooldown}s)` : otpSent ? 'Resend Code' : 'Send Code'}
                 </button>
               </div>
             </div>
 
-            {/* 6-Digit OTP */}
+            {/* 6-Digit OTP Box */}
             {otpSent && (
-              <div style={{ marginBottom: '12px', backgroundColor: 'var(--bg-subtle)', padding: '10px', borderRadius: '6px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-deep-ocean)', marginBottom: '4px' }}>
-                  Enter 6-Digit Verification Code
+              <div style={{ marginBottom: '14px', backgroundColor: 'var(--c-lime)', padding: '14px', borderRadius: '8px', border: '1px solid var(--c-mint)' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
+                  Enter 6-Digit Code Received on Email
                 </label>
                 <input
                   type="text"
                   required
                   maxLength={6}
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  placeholder="123456"
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--c-ocean-teal)', fontWeight: 700, letterSpacing: '2px' }}
+                  onChange={(e) => setOtp(e.target.value.trim())}
+                  placeholder="Enter 6-digit OTP"
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '2px solid var(--c-deep-ocean)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '4px' }}
                 />
               </div>
             )}
 
-            {/* Credential: PIN or Password */}
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
-                {role === 'ELDER' ? 'Create 4-Digit Senior PIN' : 'Create Account Password'}
+            {/* PIN or Password */}
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
+                {role === 'ELDER' ? 'Create 4-Digit Senior PIN' : 'Create Password'}
               </label>
               <input
                 type="password"
@@ -432,29 +453,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 value={credential}
                 onChange={(e) => setCredential(e.target.value)}
                 placeholder={role === 'ELDER' ? '4-digit numeric PIN' : 'At least 6 characters'}
-                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
               />
             </div>
 
             {role === 'ELDER' ? (
-              <>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
-                    Emergency Phone Contact
-                  </label>
-                  <input
-                    type="tel"
-                    value={emergencyPhone}
-                    onChange={(e) => setEmergencyPhone(e.target.value)}
-                    placeholder="+91 98765 43210"
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
-                  />
-                </div>
-              </>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
+                  Emergency Contact Phone
+                </label>
+                <input
+                  type="tel"
+                  value={emergencyPhone}
+                  onChange={(e) => setEmergencyPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
             ) : (
               <>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
                     Relationship to Patient
                   </label>
                   <input
@@ -463,12 +482,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                     value={relationship}
                     onChange={(e) => setRelationship(e.target.value)}
                     placeholder="e.g. Son, Daughter, Nurse"
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
                     Patient Link Code (Optional)
                   </label>
                   <input
@@ -476,11 +495,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                     value={linkCode}
                     onChange={(e) => setLinkCode(e.target.value.toUpperCase())}
                     placeholder="e.g. EL-8492"
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)', textTransform: 'uppercase' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)', textTransform: 'uppercase', fontWeight: 700 }}
                   />
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    If your parent has an account, enter their code to automatically connect.
-                  </span>
                 </div>
               </>
             )}
@@ -490,14 +506,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               disabled={submitLoading || !otpSent}
               style={{
                 width: '100%',
-                padding: '12px 0',
-                borderRadius: '6px',
+                padding: '14px 0',
+                borderRadius: '8px',
                 backgroundColor: 'var(--c-deep-ocean)',
                 color: '#FFFFFF',
-                fontWeight: 700,
+                fontWeight: 800,
                 fontSize: '1rem',
                 marginTop: '16px',
-                opacity: !otpSent ? 0.6 : 1
+                opacity: !otpSent ? 0.6 : 1,
+                boxShadow: '0 4px 6px rgba(24, 78, 119, 0.2)'
               }}
             >
               {submitLoading ? 'Registering...' : 'Complete Registration'}
@@ -505,15 +522,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
           </form>
         )}
 
-        {/* 3. FORGOT CREDENTIALS WITH OTP */}
+        {/* 3. FORGOT CREDENTIALS WITH OTP & RESEND COOLDOWN */}
         {view === 'FORGOT' && (
           <form onSubmit={handleResetCredential}>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '14px' }}>
-              Enter your registered email to receive a verification code and set a new {role === 'ELDER' ? '4-digit PIN' : 'password'}.
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
+              Enter your registered email address to receive a verification code and configure a new {role === 'ELDER' ? '4-digit PIN' : 'password'}.
             </p>
 
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
                 Email Address
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -521,48 +538,49 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                   type="email"
                   required
                   value={email}
-                  disabled={otpSent}
+                  disabled={otpSent && cooldown > 0}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your.email@example.com"
-                  style={{ flex: 1, padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
                 />
                 <button
                   type="button"
                   onClick={() => handleSendOtp('RESET_CREDENTIAL')}
-                  disabled={otpLoading || otpSent}
+                  disabled={otpLoading || cooldown > 0}
                   style={{
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    backgroundColor: 'var(--c-ocean-teal)',
-                    color: '#FFFFFF',
-                    fontSize: '0.82rem',
-                    fontWeight: 700
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    backgroundColor: cooldown > 0 ? '#E2E8F0' : 'var(--c-teal-green)',
+                    color: cooldown > 0 ? '#64748B' : '#FFFFFF',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  {otpLoading ? 'Sending...' : otpSent ? 'Sent' : 'Send Code'}
+                  {otpLoading ? 'Sending...' : cooldown > 0 ? `Resend (${cooldown}s)` : 'Send Code'}
                 </button>
               </div>
             </div>
 
             {otpSent && (
               <>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
-                    Enter 6-Digit Verification Code
+                <div style={{ marginBottom: '14px', backgroundColor: 'var(--c-lime)', padding: '14px', borderRadius: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
+                    Enter 6-Digit Code Received on Email
                   </label>
                   <input
                     type="text"
                     required
                     maxLength={6}
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
+                    onChange={(e) => setOtp(e.target.value.trim())}
                     placeholder="123456"
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)', fontWeight: 700 }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '2px solid var(--c-deep-ocean)', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '4px' }}
                   />
                 </div>
 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: 'var(--c-deep-ocean)' }}>
                     New {role === 'ELDER' ? '4-Digit PIN' : 'Password'}
                   </label>
                   <input
@@ -572,7 +590,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                     value={newCredential}
                     onChange={(e) => setNewCredential(e.target.value)}
                     placeholder={role === 'ELDER' ? 'New 4-digit PIN' : 'New Password (min 6 chars)'}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-strong)' }}
                   />
                 </div>
 
@@ -581,12 +599,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                   disabled={submitLoading}
                   style={{
                     width: '100%',
-                    padding: '12px 0',
-                    borderRadius: '6px',
+                    padding: '14px 0',
+                    borderRadius: '8px',
                     backgroundColor: 'var(--c-deep-ocean)',
                     color: '#FFFFFF',
-                    fontWeight: 700,
-                    fontSize: '1rem'
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    boxShadow: '0 4px 6px rgba(24, 78, 119, 0.2)'
                   }}
                 >
                   {submitLoading ? 'Updating...' : 'Update & Reset'}
@@ -602,8 +621,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 width: '100%',
                 textAlign: 'center',
                 marginTop: '16px',
-                fontSize: '0.85rem',
-                color: 'var(--text-muted)'
+                fontSize: '0.88rem',
+                color: 'var(--c-ocean-teal)',
+                fontWeight: 700
               }}
             >
               Back to Sign In

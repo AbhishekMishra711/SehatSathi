@@ -285,3 +285,4 @@ export const ElderCompanion: React.FC = () => {
     </div>
   );
 };
+

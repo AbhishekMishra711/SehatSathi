@@ -9,8 +9,8 @@
   --c-ocean-blue: #1a759f;
   --c-deep-ocean: #184e77;
 
-  /* Primary Light Theme Semantic Tokens */
-  --bg-primary: #F8FAFC;
+  /* Semantic Theme Tokens */
+  --bg-primary: #F7FAF9; /* Soft healthy sage tint */
   --bg-surface: #FFFFFF;
   --bg-subtle: #F0FDF4;
   --border-color: #E2E8F0;
@@ -20,21 +20,7 @@
   --text-muted: #475569;
   --text-light: #64748B;
 
-  --primary: var(--c-deep-ocean);
-  --primary-hover: var(--c-ocean-blue);
-  --primary-light: #EBF5FB;
-
-  --accent: var(--c-ocean-teal);
-  --accent-light: #E8F8F5;
-
-  --status-taken: #15803D;
-  --status-taken-bg: #E8F8EE;
-  --status-due: #D97706;
-  --status-due-bg: #FEF3C7;
-  --status-missed: #DC2626;
-  --status-missed-bg: #FEE2E2;
-
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -56,6 +42,11 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+  transform: translateY(-1px);
 }
 
 input, select, textarea {
@@ -63,14 +54,61 @@ input, select, textarea {
   font-size: 1rem;
 }
 
-/* Accessible focus ring */
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
   outline: 2px solid var(--c-ocean-teal);
   outline-offset: 2px;
 }
 
-/* Senior Friendly minimum touch target */
-.touch-target {
-  min-height: 48px;
-  min-width: 48px;
+/* Entrance Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseLogo {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-hero {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-card {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.logo-pulse:hover {
+  animation: pulseLogo 1.5s infinite ease-in-out;
+}
+
+/* Scroll reveal helper */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
 }

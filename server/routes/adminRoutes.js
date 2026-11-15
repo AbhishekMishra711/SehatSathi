@@ -14,3 +14,4 @@ router.get('/audit-logs', adminController.getSystemAuditLogs);
 router.post('/trigger-escalation', adminController.triggerManualEscalation);
 
 module.exports = router;
+

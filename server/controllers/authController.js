@@ -56,12 +56,11 @@ async function sendOtp(req, res, next) {
       });
     }
 
-    const otpResult = await otpService.createAndSendOtp(normalizedEmail, purpose);
+    await otpService.createAndSendOtp(normalizedEmail, purpose);
 
     res.json({
       success: true,
-      message: `A 6-digit verification code has been dispatched to ${normalizedEmail}.`,
-      ...(otpResult.otp ? { devOtp: otpResult.otp } : {})
+      message: `A 6-digit verification code has been dispatched to ${normalizedEmail}.`
     });
   } catch (err) {
     next(err);
