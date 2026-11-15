@@ -52,7 +52,7 @@ const SixDigitOtpInput: React.FC<{
           Enter 6-Digit Verification Code
         </label>
         <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--c-teal-green)' }}>
-          Valid for 10 min
+          Valid for 5 min
         </span>
       </div>
       <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>

@@ -122,56 +122,67 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Banner Navigation */}
+      {/* Top Banner Navigation: Prominent, Spacious, Palette-Themed Bar */}
       <nav style={{
-        backgroundColor: '#FFFFFF',
-        borderBottom: '2px solid var(--c-mint)',
-        padding: '14px 28px',
+        backgroundColor: 'var(--c-deep-ocean)',
+        borderBottom: '4px solid var(--c-mint)',
+        padding: '20px 40px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        boxShadow: '0 2px 10px rgba(24, 78, 119, 0.05)'
+        boxShadow: '0 8px 24px rgba(24, 78, 119, 0.25)'
       }}>
-        {/* Logo and Brand Name with animated entrance from below */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* User-Provided Hands-Heart Logo and Brand Name with animated entrance */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="SehatSathi Care Logo"
             className="animate-logo-entrance logo-pulse"
-            style={{ width: '46px', height: '46px', objectFit: 'contain' }}
+            style={{
+              width: '56px',
+              height: '56px',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25))'
+            }}
           />
           <div className="animate-title-slide">
             <span style={{
-              fontSize: '1.55rem',
+              fontSize: '1.85rem',
               fontWeight: 800,
-              color: 'var(--c-deep-ocean)',
+              color: '#FFFFFF',
               letterSpacing: '-0.025em',
               display: 'block',
               lineHeight: 1.1
             }}>
               SehatSathi
             </span>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--c-teal-green)', letterSpacing: '0.6px' }}>
+            <span style={{
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              color: 'var(--c-lime)',
+              letterSpacing: '1px'
+            }}>
               DIGNIFIED SENIOR CARE
             </span>
           </div>
         </div>
 
         {/* Action Buttons: Patient and Caretaker */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
             onClick={() => setModalRole('ELDER')}
             style={{
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: '2px solid var(--c-teal-green)',
-              backgroundColor: '#FFFFFF',
+              padding: '12px 24px',
+              borderRadius: '10px',
+              border: 'none',
+              backgroundColor: 'var(--c-lime)',
               color: 'var(--c-deep-ocean)',
               fontWeight: 800,
-              fontSize: '0.95rem'
+              fontSize: '1rem',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
             }}
           >
             Patient
@@ -180,20 +191,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
           <button
             onClick={() => setModalRole('CARETAKER')}
             style={{
-              padding: '10px 22px',
-              borderRadius: '8px',
-              backgroundColor: 'var(--c-deep-ocean)',
+              padding: '12px 26px',
+              borderRadius: '10px',
+              border: 'none',
+              backgroundColor: 'var(--c-teal-green)',
               color: '#FFFFFF',
               fontWeight: 800,
-              fontSize: '0.95rem',
+              fontSize: '1rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 4px 10px rgba(24, 78, 119, 0.2)'
+              gap: '8px',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)'
             }}
           >
             <span>Caretaker / Family</span>
-            <ArrowRight size={16} />
+            <ArrowRight size={18} />
           </button>
         </div>
       </nav>

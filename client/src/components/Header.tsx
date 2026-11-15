@@ -10,47 +10,47 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   return (
     <header style={{
-      backgroundColor: '#FFFFFF',
-      borderBottom: '2px solid var(--c-mint)',
-      padding: '12px 28px',
+      backgroundColor: 'var(--c-deep-ocean)',
+      borderBottom: '4px solid var(--c-mint)',
+      padding: '18px 40px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      boxShadow: '0 2px 8px rgba(24, 78, 119, 0.04)'
+      boxShadow: '0 6px 20px rgba(24, 78, 119, 0.22)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
         <img
-          src="/logo.svg"
+          src="/logo.png"
           alt="SehatSathi Care Logo"
           className="animate-logo-entrance logo-pulse"
-          style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+          style={{ width: '48px', height: '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.25))' }}
         />
         <div className="animate-title-slide">
-          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em', display: 'block', lineHeight: 1.1 }}>
+          <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', display: 'block', lineHeight: 1.1 }}>
             SehatSathi
           </span>
-          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--c-teal-green)' }}>
+          <span style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--c-lime)', letterSpacing: '0.8px' }}>
             DIGNIFIED SENIOR CARE
           </span>
         </div>
       </div>
 
       {user && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-main)' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: '#FFFFFF' }}>
               {user.name}
             </div>
             <span style={{
               fontSize: '0.74rem',
               fontWeight: 800,
-              padding: '2px 8px',
+              padding: '3px 10px',
               borderRadius: '12px',
-              backgroundColor: user.role === 'ELDER' ? 'var(--c-lime)' : user.role === 'ADMIN' ? 'var(--c-deep-ocean)' : 'var(--c-mint)',
-              color: user.role === 'ADMIN' ? '#FFFFFF' : 'var(--c-deep-ocean)'
+              backgroundColor: user.role === 'ELDER' ? 'var(--c-lime)' : 'var(--c-mint)',
+              color: 'var(--c-deep-ocean)'
             }}>
               {user.role === 'ELDER' ? 'Patient' : user.role === 'ADMIN' ? 'Administrator' : user.role === 'CARETAKER' ? 'Primary Caretaker' : 'Family Member'}
             </span>
@@ -62,12 +62,12 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '8px 14px',
+              padding: '9px 16px',
               borderRadius: '8px',
-              border: '1px solid var(--border-strong)',
-              backgroundColor: '#FFFFFF',
-              color: 'var(--text-muted)',
-              fontSize: '0.88rem',
+              border: '1px solid rgba(255, 255, 255, 0.35)',
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              color: '#FFFFFF',
+              fontSize: '0.9rem',
               fontWeight: 700
             }}
             aria-label="Sign out of account"

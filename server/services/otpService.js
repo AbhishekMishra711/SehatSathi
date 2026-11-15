@@ -20,7 +20,7 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
   });
 
   const otp = generateOtp();
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes strictly
 
   await prisma.emailOtp.create({
     data: {
@@ -46,7 +46,7 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
         <span style="font-size: 38px; font-weight: 800; letter-spacing: 8px; color: #184e77;">${otp}</span>
       </div>
       <p style="font-size: 13px; color: #475569; line-height: 1.5;">
-        This code is valid for <strong>10 minutes</strong>. If you did not request this, please disregard this email.
+        This code is valid for <strong>5 minutes</strong>. If you did not request this, please disregard this email.
       </p>
       <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 24px 0 16px 0;" />
       <p style="font-size: 12px; color: #64748B; margin: 0;">
@@ -55,7 +55,7 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
     </div>
   `;
 
-  const plainText = `Your SehatSathi verification code is: ${otp}. Valid for 10 minutes.`;
+  const plainText = `Your SehatSathi verification code is: ${otp}. Valid for 5 minutes.`;
 
   const mailResult = await mailer.sendEmailNotification({
     to: normalizedEmail,
