@@ -49,10 +49,10 @@ const SixDigitOtpInput: React.FC<{
     <div style={{ margin: '16px 0 16px 0' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A' }}>
-          Enter 6-Digit Verification Code
+          Enter 6-digit verification code
         </label>
         <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#00AC73' }}>
-          Valid for 5 min
+          Valid for 5 minutes
         </span>
       </div>
       <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
@@ -333,10 +333,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               color: '#00704A',
               border: '1px solid #A7F3D0'
             }}>
-              {role === 'ELDER' ? 'Senior Patient Portal' : role === 'ADMIN' ? 'Administration Portal' : 'Caregiver & Family Portal'}
+              {role === 'ELDER' ? 'Elder portal' : role === 'ADMIN' ? 'Administration' : 'Family and caretaker portal'}
             </span>
             <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0F172A', marginTop: '8px' }}>
-              {view === 'LOGIN' ? 'Welcome Back' : view === 'REGISTER' ? 'Create Account' : 'Reset Credentials'}
+              {view === 'LOGIN' ? 'Sign in' : view === 'REGISTER' ? 'Create account' : 'Reset credentials'}
             </h2>
           </div>
           <button
@@ -362,7 +362,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 borderBottom: view === 'LOGIN' ? '3px solid #00AC73' : 'none'
               }}
             >
-              Sign In
+              Sign in
             </button>
             <button
               onClick={() => { setView('REGISTER'); setError(null); }}
@@ -375,7 +375,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 borderBottom: view === 'REGISTER' ? '3px solid #00AC73' : 'none'
               }}
             >
-              New Registration
+              New registration
             </button>
           </div>
         )}
@@ -587,7 +587,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
               <>
                 <div style={{ marginBottom: '14px' }}>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: '#0F172A' }}>
-                    Relationship to Patient
+                    Relationship to elder
                   </label>
                   <input
                     type="text"
@@ -601,7 +601,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
 
                 <div style={{ marginBottom: '14px' }}>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '4px', color: '#0F172A' }}>
-                    Patient Link Code (Optional)
+                    Elder link code (optional)
                   </label>
                   <input
                     type="text"
@@ -632,7 +632,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                 transition: 'all 0.2s ease'
               }}
             >
-              {!otpSent ? 'Enter Email & Send Code to Verify' : submitLoading ? 'Registering...' : 'Complete Registration'}
+              {!otpSent ? 'Enter email and send code to verify' : submitLoading ? 'Registering...' : 'Complete registration'}
             </button>
           </form>
         )}

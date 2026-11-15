@@ -169,7 +169,7 @@ async function registerCaregiver(req, res, next) {
         where: { linkCode: data.linkCode.trim().toUpperCase() }
       });
       if (!linkedElderProfile) {
-        return res.status(404).json({ success: false, error: 'Patient Link Code not found. Please double-check the code with the patient.' });
+        return res.status(404).json({ success: false, error: 'Elder link code not found. Please check the code with the elder.' });
       }
     }
 

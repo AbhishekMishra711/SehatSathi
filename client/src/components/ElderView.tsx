@@ -165,7 +165,7 @@ export const ElderView: React.FC = () => {
         marginBottom: '16px'
       }}>
         <div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Your Patient Link Code</div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Your elder link code</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
             <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '1px' }}>
               {linkCode || 'Loading...'}
@@ -530,11 +530,11 @@ export const ElderView: React.FC = () => {
         </div>
       )}
 
-      {/* Tab 4: My People (Elderly Empowerment & Consent) */}
+      {/* Tab 4: My People */}
       {activeTab === 'people' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ padding: '14px 16px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--c-deep-ocean)', fontSize: '0.9rem', fontWeight: 600, border: '1px solid var(--c-ocean-teal)' }}>
-            Share your Patient Link Code <strong>{linkCode}</strong> with your family or caretaker so they can connect with you.
+            Share your elder link code <strong>{linkCode}</strong> with your family or caretaker to connect.
           </div>
 
           {caregivers.length === 0 ? (

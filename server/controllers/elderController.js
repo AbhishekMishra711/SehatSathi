@@ -1,6 +1,7 @@
 const { z } = require('zod');
 const prisma = require('../db/prisma');
 const { handleElderAssistantQuery } = require('../services/elderAiAssistant');
+const mailer = require('../services/mailer');
 
 async function getElderProfileFromUser(userId) {
   const profile = await prisma.elderProfile.findUnique({
@@ -97,6 +98,33 @@ async function confirmDose(req, res, next) {
         details: `Senior confirmed taking ${dose.medication.name} (${dose.medication.dosage})`
       }
     });
+
+    // Notify all active caregivers immediately via email that senior has taken dose
+    try {
+      const activeLinks = await prisma.caregiverLink.findMany({
+        where: { elderProfileId: profile.id, status: 'ACTIVE' },
+        include: { caregiver: true }
+      });
+
+      const takenTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      for (const link of activeLinks) {
+        if (link.caregiver && link.caregiver.email) {
+          const emailData = mailer.getCaretakerDoseTakenEmail(
+            link.caregiver.name,
+            profile.user.name,
+            dose.medication.name,
+            dose.medication.dosage,
+            takenTime
+          );
+          mailer.sendEmailNotification({
+            to: link.caregiver.email,
+            ...emailData
+          }).catch(e => console.error('[ConfirmDose Caregiver Email Error]', e.message));
+        }
+      }
+    } catch (emailErr) {
+      console.warn('[ConfirmDose Caregiver Notification Error]', emailErr.message);
+    }
 
     res.json({
       success: true,
@@ -240,7 +268,7 @@ async function revokeCaregiverAccess(req, res, next) {
   }
 }
 
-// Patient AI Voice/Chat Assistant query
+// Elder AI Voice/Chat Assistant query
 async function chatWithAssistant(req, res, next) {
   try {
     const schema = z.object({
@@ -277,6 +305,48 @@ async function getAssistantHistory(req, res, next) {
   }
 }
 
+async function getAllMedications(req, res, next) {
+  try {
+    const profile = await getElderProfileFromUser(req.user.id);
+    const medications = await prisma.medication.findMany({
+      where: {
+        elderProfileId: profile.id,
+        isActive: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({
+      success: true,
+      medications
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getDoseHistory(req, res, next) {
+  try {
+    const profile = await getElderProfileFromUser(req.user.id);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const historyDoses = await prisma.doseSchedule.findMany({
+      where: {
+        elderProfileId: profile.id,
+        scheduledFor: { gte: thirtyDaysAgo }
+      },
+      include: { medication: true },
+      orderBy: { scheduledFor: 'desc' }
+    });
+
+    res.json({
+      success: true,
+      doses: historyDoses
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getTodaySchedule,
   confirmDose,
@@ -285,5 +355,7 @@ module.exports = {
   updateCaregiverPermission,
   revokeCaregiverAccess,
   chatWithAssistant,
-  getAssistantHistory
+  getAssistantHistory,
+  getAllMedications,
+  getDoseHistory
 };

@@ -16,7 +16,8 @@ import {
   Sparkles,
   Volume2,
   Calendar,
-  Smartphone
+  Smartphone,
+  Mail
 } from 'lucide-react';
 import { AuthModal } from './AuthModal';
 import { User } from '../types';
@@ -75,69 +76,69 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
   const features: FeatureDetail[] = [
     {
-      title: 'One-Touch Senior PWA',
-      badge: 'Senior Accessibility',
-      shortDesc: 'Extra-large touch targets and simple 4-digit PIN authentication designed specifically for seniors.',
+      title: 'Elder mobile screen',
+      badge: 'Elder access',
+      shortDesc: 'Large buttons, high contrast, and a 4-digit PIN for seniors.',
       fullDesc: [
-        'Built specifically for aging eyes and one-thumb navigation on any smartphone.',
-        'Uses an accessible high-contrast palette with 48px+ touch targets and a single primary action per screen.',
-        'Protected by Bcrypt PIN hashing and automatic 15-minute account lockout after 5 failed attempts.',
-        'Includes browser-native speech synthesis to read dosage and instructions aloud for low-vision patients.'
+        'Designed for phone screens with 48px or larger touch targets.',
+        'One primary action per screen with high-contrast text.',
+        'Protected by PIN hashing and a 15-minute lockout after 5 failed attempts.',
+        'Speech button reads the medication name, dose, and instructions aloud.'
       ]
     },
     {
-      title: 'AI Voice & Health Companion',
-      badge: 'Sathi AI',
-      shortDesc: 'A natural voice and chat companion strictly bounded to the patient’s medications and routine.',
+      title: 'Voice and text companion',
+      badge: 'Assistant',
+      shortDesc: 'Answers questions about scheduled medicines, visits, and meals.',
       fullDesc: [
-        'Seniors can speak directly into their smartphone microphone or type natural questions.',
-        'Live contextual awareness: Knows the patient’s exact medications for today, doctor appointments, and notes.',
-        'Strict safety guardrails: Strictly rejects off-topic queries and provides compassionate, clear guidance on diet and dosage.',
-        'Includes one-touch audio playback on every answer so seniors can listen instead of reading.'
+        'Elders can speak or type questions about their schedule.',
+        'Reads the senior\'s active medicines and upcoming appointments.',
+        'Does not recommend unlisted medicines and sticks to daily routines.',
+        'Audio playback reads each response aloud.'
       ]
     },
     {
-      title: 'Smart Escalation Chain',
-      badge: 'Safety Net',
-      shortDesc: 'Multi-tier alerts to caretakers and family if a scheduled medication dose is missed.',
+      title: 'Escalation chain',
+      badge: 'Email alerts',
+      shortDesc: 'Emails caretakers and family if a scheduled dose is missed.',
       fullDesc: [
-        'Deterministic three-tier escalation: Elder reminder first, followed by primary caretaker alert, then extended family notification.',
-        'Runs on an idempotent cron architecture, ensuring no repeated or duplicate email dispatches.',
-        'Built with pure time evaluation functions, making the entire escalation timeline verifiable and deterministic.',
-        'Includes a live testing simulator in the caretaker dashboard for real-time safety verification.'
+        'Three-stage escalation: elder reminder first, then primary caretaker alert, then family alert.',
+        'Runs on an automated schedule without sending duplicate emails.',
+        'Evaluates whether each dose is taken or overdue based on scheduled time and grace periods.',
+        'Includes a test button in the caretaker dashboard to verify alerts.'
       ]
     },
     {
-      title: 'Elder-Controlled Permissions',
-      badge: 'Dignity & Control',
-      shortDesc: 'Seniors decide what family members can view or edit, with instant revocation power.',
+      title: 'Elder-controlled access',
+      badge: 'Access control',
+      shortDesc: 'The elder decides which family members can view or edit medicines.',
       fullDesc: [
-        'Dignity-first architecture: Seniors generate a private link code to invite family members.',
-        'Granular control: The senior can grant view-only access or medication-editing permissions.',
-        'Instant revocation: One tap in the senior profile immediately disconnects any family member.',
-        'Family activity logs show seniors exactly who checked their schedule.'
+        'Elders generate a 6-digit code to connect family members.',
+        'The elder can grant view-only or editing permissions.',
+        'One tap removes access for any linked account.',
+        'Activity logs show the elder who accessed the account.'
       ]
     },
     {
-      title: 'Gemini Schedule Parser',
-      badge: 'Verified AI',
-      shortDesc: 'Turns messy prescription sentences into structured schedules with human verification.',
+      title: 'Prescription helper',
+      badge: 'Prescription helper',
+      shortDesc: 'Extracts schedules from prescription text for caretaker review.',
       fullDesc: [
-        'Upload prescription notes or paste doctor instructions (e.g., "Metformin 500mg twice daily with meals").',
-        'Gemini 2.0 extracts structured dosage, times, meal relation, and potential safety warnings.',
-        'Human-in-the-loop: Caretakers verify and approve the schedule before it goes live to the senior.',
-        'Detects conflicting schedule entries to prevent double dosing.'
+        'Paste doctor notes or prescription instructions.',
+        'Extracts medication name, dosage, frequency, and time slots.',
+        'Caretaker reviews and approves each item before saving.',
+        'Saves the verified schedule to the elder\'s daily list.'
       ]
     },
     {
-      title: 'Tamper-Evident Audit Trail',
-      badge: 'Accountability',
-      shortDesc: 'Complete transparency: logs who confirmed doses, modified meds, or received alerts.',
+      title: 'Log of every change',
+      badge: 'Activity log',
+      shortDesc: 'Records who confirmed doses, modified medicines, or received alerts.',
       fullDesc: [
-        'Every single dose marked taken, missed, or confirmed is permanently recorded with a timestamp.',
-        'Caretakers can see exactly whether the senior confirmed the dose or if a caregiver assisted.',
-        'Audit logs cannot be edited or deleted by non-admin users.',
-        'Exportable history for doctor visits and clinical medication reviews.'
+        'Every dose marked as taken or missed is recorded with a timestamp.',
+        'Shows whether the elder or a caretaker confirmed the dose.',
+        'Logs cannot be edited or deleted by non-admin users.',
+        'Provides an accurate record of medication history.'
       ]
     }
   ];
@@ -151,7 +152,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
       overflowX: 'hidden'
     }}>
       {/* Full-Width Clean Modern Navbar (Medico Reference Style) */}
-      <nav style={{
+      <nav className="landing-nav" style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
@@ -194,13 +195,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               color: '#00AC73',
               letterSpacing: '0.8px'
             }}>
-              DIGNIFIED SENIOR CARE
+              SENIOR MEDICATION CARE
             </span>
           </div>
         </div>
 
         {/* Center Minimal Navigation Links */}
-        <div style={{
+        <div className="landing-nav-links" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '28px'
@@ -256,9 +257,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         </div>
 
         {/* Action CTAs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="landing-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
             onClick={() => setModalRole('ELDER')}
+            className="landing-nav-btn"
             style={{
               padding: '10px 22px',
               borderRadius: '9999px',
@@ -270,11 +272,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               cursor: 'pointer'
             }}
           >
-            Patient Access
+            Elder login
           </button>
 
           <button
             onClick={() => setModalRole('CARETAKER')}
+            className="landing-nav-btn"
             style={{
               padding: '10px 24px',
               borderRadius: '9999px',
@@ -289,7 +292,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               boxShadow: '0 4px 14px rgba(0, 172, 115, 0.25)'
             }}
           >
-            <span>Caretaker Portal</span>
+            <span>Family and caretaker login</span>
             <ArrowRight size={16} />
           </button>
         </div>
@@ -304,7 +307,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         position: 'relative',
         zIndex: 1,
         width: '100%'
-      }} className="animate-hero">
+      }} className="animate-hero landing-hero">
         
         {/* Subtle Eyebrow Pill */}
         <div style={{
@@ -321,31 +324,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           border: '1px solid #A7F3D0',
           boxShadow: '0 2px 8px rgba(167, 243, 208, 0.4)'
         }}>
-          <Sparkles size={16} color="#00AC73" />
-          <span>Patient-Centered Elderly Care & Medication Management</span>
+          <span>Elderly care and medication management</span>
         </div>
 
         {/* Editorial Modern Headline */}
-        <h1 style={{
-          fontSize: 'clamp(2.6rem, 5.2vw, 4.2rem)',
+        <h1 className="landing-hero-title" style={{
+          fontSize: 'clamp(2.4rem, 4.8vw, 3.8rem)',
           fontWeight: 800,
-          letterSpacing: '-0.035em',
+          letterSpacing: '-0.03em',
           lineHeight: 1.15,
           color: '#0F172A',
-          maxWidth: '1040px',
+          maxWidth: '980px',
           margin: '0 auto 18px auto'
         }}>
-          Dignified Healthcare for Seniors.{' '}
-          <span style={{
-            color: '#00AC73',
-            display: 'inline-block'
-          }}>
-            Peace of Mind for Families.
-          </span>
+          Medicine reminders that tell the family when a dose is missed.
         </h1>
 
         {/* Humanized Subtext */}
-        <p style={{
+        <p className="landing-hero-desc" style={{
           fontSize: '1.16rem',
           fontWeight: 500,
           color: '#64748B',
@@ -353,12 +349,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           margin: '0 auto 34px auto',
           lineHeight: 1.65
         }}>
-          SehatSathi empowers seniors with an accessible, high-contrast mobile interface, voice audio assistant, 
-          and an intelligent escalation chain that keeps family notified when doses are missed.
+          The elder taps once to confirm each dose. If they don’t, the caretaker gets an email, then the rest of the family. The elder decides who can see what.
         </p>
 
-        {/* Floating Category Pills */}
-        <div style={{
+        {/* Plain Factual Feature Chips */}
+        <div className="landing-hero-chips" style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -379,7 +374,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             alignItems: 'center',
             gap: '8px'
           }}>
-            <Volume2 size={16} color="#00AC73" /> Voice Sathi Companion
+            <Mail size={16} color="#00AC73" /> Email reminders
           </span>
           <span style={{
             padding: '8px 18px',
@@ -394,7 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             alignItems: 'center',
             gap: '8px'
           }}>
-            <ShieldCheck size={16} color="#0284C7" /> 3-Tier Family Escalation
+            <ShieldCheck size={16} color="#0284C7" /> Escalation to caretaker, then family
           </span>
           <span style={{
             padding: '8px 18px',
@@ -409,7 +404,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             alignItems: 'center',
             gap: '8px'
           }}>
-            <Smartphone size={16} color="#00AC73" /> 4-Digit Senior PIN
+            <KeyRound size={16} color="#00AC73" /> Elder controls who can see what
           </span>
           <span style={{
             padding: '8px 18px',
@@ -424,21 +419,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             alignItems: 'center',
             gap: '8px'
           }}>
-            <Lock size={16} color="#0284C7" /> Zero Plaintext Security
+            <Eye size={16} color="#0284C7" /> Log of every change
+          </span>
+          <span style={{
+            padding: '8px 18px',
+            borderRadius: '9999px',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid rgba(226, 232, 240, 0.9)',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            color: '#334155',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <Volume2 size={16} color="#00AC73" /> Reads the next dose aloud
           </span>
         </div>
 
         {/* Uncluttered Dual-Portal Console (High Visual Hierarchy, Zero Nested Clutter) */}
-        <div className="glass-card" style={{
+        <div className="glass-card landing-portal-grid" style={{
           borderRadius: '24px',
           maxWidth: '1140px',
           margin: '0 auto',
           overflow: 'hidden',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
           textAlign: 'left'
         }}>
-          {/* Senior Patient Side */}
+          {/* Senior Elder Side */}
           <div style={{
             padding: '44px 38px',
             display: 'flex',
@@ -459,15 +469,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   color: '#00704A',
                   border: '1px solid #A7F3D0'
                 }}>
-                  SENIOR PATIENT PORTAL
+                  ELDER PORTAL
                 </span>
               </div>
 
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', marginBottom: '10px', letterSpacing: '-0.025em' }}>
-                Simple, Dignified Senior View
+                Elder screen
               </h2>
               <p style={{ fontSize: '1rem', color: '#64748B', lineHeight: 1.6, marginBottom: '28px' }}>
-                Built for aging eyes and one-touch interaction. Large touch targets, gentle audio guidance, and zero confusion.
+                Large buttons and high contrast. The elder taps once to mark a dose as taken.
               </p>
 
               {/* Clean, Non-Overwhelming Feature Points */}
@@ -477,8 +487,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     <Smartphone size={18} color="#00AC73" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>One-Touch 4-Digit PIN Access</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>No complex passwords or usernames to remember. 15-minute brute-force protection built in.</p>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>4-digit PIN login</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>The elder logs in with a 4-digit PIN. Five wrong attempts locks the account for 15 minutes.</p>
                   </div>
                 </div>
 
@@ -487,8 +497,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     <Volume2 size={18} color="#00AC73" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Voice & Audio Sathi Companion</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Speaks medication dosages aloud and answers daily routine or diet questions naturally.</p>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Reads doses aloud</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>The elder can tap to hear the medicine name, dose, and instructions read out loud.</p>
                   </div>
                 </div>
 
@@ -497,8 +507,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     <ShieldCheck size={18} color="#00AC73" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Senior-Controlled Dignity</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Seniors generate their own caregiver link code and can revoke permissions anytime.</p>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Elder controls access</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>The elder shares a 6-digit link code with family to connect, and can remove access at any time.</p>
                   </div>
                 </div>
               </div>
@@ -522,7 +532,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 cursor: 'pointer'
               }}
             >
-              <span>Enter Senior Patient Portal</span>
+              <span>Enter elder portal</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -547,15 +557,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   color: '#0284C7',
                   border: '1px solid #BAE6FD'
                 }}>
-                  CARE CIRCLE & FAMILY GUARDIAN
+                  FAMILY AND CARETAKER
                 </span>
               </div>
 
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', marginBottom: '10px', letterSpacing: '-0.025em' }}>
-                Intelligent Safety Net
+                Caretaker dashboard
               </h2>
               <p style={{ fontSize: '1rem', color: '#64748B', lineHeight: 1.6, marginBottom: '28px' }}>
-                Real-time visibility into medication adherence, doctor visits, and multi-tier escalation warnings.
+                Add medications, set times, track taken doses, and receive email alerts if a dose is missed.
               </p>
 
               {/* Clean, Non-Overwhelming Feature Points */}
@@ -565,18 +575,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     <AlertTriangle size={18} color="#0284C7" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>3-Tier Automated Escalation</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Deterministic notification chain alert caretakers immediately if a scheduled dose is missed.</p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                    <Sparkles size={18} color="#0284C7" />
-                  </div>
-                  <div>
-                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Gemini AI Prescription Parser</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Extracts schedules and safety notes from prescriptions with human verification.</p>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Escalation alerts</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>If a dose is not confirmed within the grace window, an email alert is sent to the caretaker.</p>
                   </div>
                 </div>
 
@@ -585,8 +585,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     <Eye size={18} color="#0284C7" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Tamper-Evident Medical Audit</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Permanent cryptographic history of all doses confirmed, modified, or alerted.</p>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Prescription helper</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Fill in medication details from prescription notes. The caretaker reviews and approves each item before saving.</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                    <Clock size={18} color="#0284C7" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>Log of every change</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0, lineHeight: 1.45 }}>Every dose confirmed, schedule change, and alert sent is recorded with a timestamp.</p>
                   </div>
                 </div>
               </div>
@@ -610,7 +620,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 cursor: 'pointer'
               }}
             >
-              <span>Enter Caretaker Portal</span>
+              <span>Enter family and caretaker portal</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -645,8 +655,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <ShieldCheck size={24} color="#00A86B" />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>100% Deterministic</div>
-              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Mathematical cron guarantees alert dispatch</div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Scheduled checks</div>
+              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Checks every minute for missed doses</div>
             </div>
           </div>
 
@@ -671,8 +681,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <Lock size={22} color="#0284C7" />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Zero-Plaintext PINs</div>
-              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Bcrypt salted cryptographic security</div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Hashed credentials</div>
+              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>PINs and passwords stored with Bcrypt</div>
             </div>
           </div>
 
@@ -697,8 +707,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <Clock size={22} color="#D97706" />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>5-Minute Expiry</div>
-              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Single-use transactional verification</div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>5-minute code expiry</div>
+              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Email verification codes expire after 5 minutes</div>
             </div>
           </div>
 
@@ -723,8 +733,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <Heart size={22} color="#9333EA" />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Elder Dignity</div>
-              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Seniors control access & privacy</div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F172A' }}>Elder controls access</div>
+              <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Seniors decide who can see what</div>
             </div>
           </div>
         </div>
@@ -756,13 +766,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             border: '1px solid #A7F3D0',
             marginBottom: '10px'
           }}>
-            CORE ARCHITECTURE
+            HOW IT WORKS
           </span>
           <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em' }}>
-            Built for Independence, Safety, and Trust
+            Features built for elders and families
           </h2>
           <p style={{ fontSize: '1.02rem', color: '#64748B', marginTop: '8px' }}>
-            Explore how SehatSathi solves elder medication adherence gracefully.
+            Simple screens for the elder, with automatic email alerts for the family.
           </p>
         </div>
 
@@ -820,7 +830,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   cursor: 'pointer'
                 }}
               >
-                <span>Read More</span>
+                <span>Read more</span>
                 <ChevronRight size={16} />
               </button>
             </div>
@@ -856,13 +866,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               border: '1px solid #A7F3D0',
               marginBottom: '10px'
             }}>
-              VERIFIED ESCALATION CHAIN
+              ESCALATION SCHEDULE
             </span>
             <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '8px', letterSpacing: '-0.025em' }}>
-              Multi-Tier Safety Escalation Pipeline
+              Three-stage escalation pipeline
             </h2>
             <p style={{ fontSize: '1rem', color: '#64748B', maxWidth: '680px', margin: '0 auto' }}>
-              Pure mathematical time evaluation guarantees zero missed doses and zero duplicate notifications.
+              Calculates missed doses based on scheduled times and grace periods.
             </p>
           </div>
 
@@ -905,14 +915,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 </div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#004D34', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <BellRing size={18} color="#00A86B" />
-                  <span>Patient PWA Audio Prompt</span>
+                  <span>Elder phone reminder</span>
                 </h3>
                 <p style={{ fontSize: '0.92rem', color: '#166534', lineHeight: 1.55 }}>
-                  Immediate audio chime & high-contrast on-screen prompt on senior’s phone. A single tap confirms medication taken.
+                  An on-screen prompt and read-aloud option appear on the elder's phone. One tap confirms the dose.
                 </p>
               </div>
               <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #BBF7D0', fontSize: '0.82rem', fontWeight: 700, color: '#15803D' }}>
-                &bull; Primary Actor: Senior Citizen Direct
+                &bull; Actor: Elder
               </div>
             </div>
 
@@ -944,19 +954,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     02
                   </span>
                   <span style={{ fontSize: '0.78rem', fontWeight: 700, padding: '3px 10px', borderRadius: '9999px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
-                    +15 Min Grace Expired
+                    +15 min grace window
                   </span>
                 </div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#78350F', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <AlertTriangle size={18} color="#D97706" />
-                  <span>Primary Caretaker Alert</span>
+                  <span>Primary caretaker alert</span>
                 </h3>
                 <p style={{ fontSize: '0.92rem', color: '#92400E', lineHeight: 1.55 }}>
-                  High-priority email notification dispatched to designated primary caregiver with instant phone check-in prompt.
+                  If the dose is not confirmed within 15 minutes, an email is sent to the primary caretaker.
                 </p>
               </div>
               <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #FCD34D', fontSize: '0.82rem', fontWeight: 700, color: '#92400E' }}>
-                &bull; Idempotent: 1 alert per missed window
+                &bull; Actor: Primary caretaker
               </div>
             </div>
 
@@ -988,19 +998,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     03
                   </span>
                   <span style={{ fontSize: '0.78rem', fontWeight: 700, padding: '3px 10px', borderRadius: '9999px', backgroundColor: '#FEE2E2', color: '#991B1B' }}>
-                    +30 Min Critical Alert
+                    +30 min second grace window
                   </span>
                 </div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#7F1D1D', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <PhoneCall size={18} color="#DC2626" />
-                  <span>Extended Family Circle</span>
+                  <span>Family alert</span>
                 </h3>
                 <p style={{ fontSize: '0.92rem', color: '#991B1B', lineHeight: 1.55 }}>
-                  Full emergency escalation to all linked family members, emergency contacts, and recorded clinical providers.
+                  If still unconfirmed after a second grace period, an email is sent to all linked family members.
                 </p>
               </div>
               <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #FCA5A5', fontSize: '0.82rem', fontWeight: 700, color: '#991B1B' }}>
-                &bull; Full Audit Log: Recorded immutably
+                &bull; Actor: Family members
               </div>
             </div>
           </div>
@@ -1037,7 +1047,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 SehatSathi
               </span>
               <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748B' }}>
-                Dignified Senior Care &bull; Prompt Wars X Catalyst 2026
+                Senior medication reminders &bull; Prompt Wars X Catalyst 2026
               </span>
             </div>
           </div>
@@ -1063,7 +1073,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 cursor: 'pointer'
               }}
             >
-              Senior Portal
+              Elder login
             </button>
             <button
               onClick={() => setModalRole('CARETAKER')}
@@ -1074,7 +1084,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 cursor: 'pointer'
               }}
             >
-              Caregiver Portal
+              Family and caretaker login
             </button>
           </div>
         </div>
@@ -1129,10 +1139,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   marginBottom: '8px',
                   border: '1px solid #A7F3D0'
                 }}>
-                  PATIENT PROTECTION & PRIVACY GUARANTEE
+                  ELDER PRIVACY AND SECURITY
                 </span>
                 <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>
-                  Safety & Privacy First
+                  Safety & privacy
                 </h2>
               </div>
               <button
@@ -1174,10 +1184,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#E8F8EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <KeyRound size={18} color="#00A86B" />
                   </div>
-                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Elder-Controlled Access</h4>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Elder-controlled access</h4>
                 </div>
                 <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-                  Seniors generate a private Patient Link Code. Caregivers cannot access without explicit permission, and seniors can revoke access anytime with one tap.
+                  Seniors generate a 6-digit link code. Family cannot access without permission, and seniors can revoke access at any time with one tap.
                 </p>
               </div>
 
@@ -1195,10 +1205,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Lock size={18} color="#0284C7" />
                   </div>
-                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Zero-Plaintext Hashing</h4>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Hashed credentials</h4>
                 </div>
                 <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-                  Senior PINs and caregiver passwords are encrypted with 10 salt rounds of Bcrypt. Raw credentials are never stored or exposed in plaintext.
+                  Senior PINs and caregiver passwords are encrypted with Bcrypt. Plaintext credentials are never stored.
                 </p>
               </div>
 
@@ -1216,10 +1226,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Clock size={18} color="#D97706" />
                   </div>
-                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>5-Minute Single-Use OTP</h4>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>5-minute code expiry</h4>
                 </div>
                 <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-                  All email verification codes automatically expire after 5 minutes and are destroyed upon single verification to eliminate replay attacks.
+                  Email verification codes expire after 5 minutes and are deleted upon verification.
                 </p>
               </div>
 
@@ -1237,10 +1247,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <ShieldCheck size={18} color="#9333EA" />
                   </div>
-                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Brute-Force Lockout</h4>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>15-minute account lockout</h4>
                 </div>
                 <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-                  60-second cooldown timer prevents email spamming, and automatic 15-minute account lockouts trigger after 5 consecutive failed attempts.
+                  A 60-second timer limits email sends, and an automatic 15-minute lockout triggers after 5 failed attempts.
                 </p>
               </div>
 
@@ -1259,9 +1269,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   <Eye size={18} color="#15803D" />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Tamper-Evident Medical Audit Trail</h4>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Log of every change</h4>
                   <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-                    Every dose marked taken, doctor appointment scheduled, or safety alert dispatched is permanently logged with an authentic timestamp and actor identity.
+                    Every dose marked as taken, appointment scheduled, or email alert dispatched is recorded with a timestamp.
                   </p>
                 </div>
               </div>

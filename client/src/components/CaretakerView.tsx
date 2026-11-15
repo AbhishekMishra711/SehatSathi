@@ -202,7 +202,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
     }
   };
 
-  // If no elder linked yet, show "Connect to Patient" card
+  // If no elder linked yet, show "Connect to elder" card
   if (!elderProfileId) {
     return (
       <div style={{ maxWidth: '520px', margin: '48px auto', padding: '20px' }}>
@@ -227,10 +227,10 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             <LinkIcon size={24} />
           </div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
-            Connect to a Patient Profile
+            Connect to an elder
           </h2>
           <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
-            To view medications and receive escalation alerts, please enter the Patient Link Code provided on the senior's phone screen.
+            Enter the 6-digit link code shown on the elder's phone screen to view medications and receive alerts.
           </p>
 
           <form onSubmit={async (e) => {
@@ -247,14 +247,14 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
               // Reload links
               await initElder();
             } catch (err: any) {
-              alert(err.message || 'Could not connect with patient code.');
+              alert(err.message || 'Could not connect with elder link code.');
             } finally {
               setConnecting(false);
             }
           }}>
             <div style={{ marginBottom: '14px', textAlign: 'left' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
-                Patient Link Code
+                Elder link code
               </label>
               <input
                 type="text"
@@ -268,7 +268,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
 
             <div style={{ marginBottom: '20px', textAlign: 'left' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
-                Your Relationship
+                Your relationship
               </label>
               <input
                 type="text"
@@ -293,7 +293,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                 fontSize: '1rem'
               }}
             >
-              {connecting ? 'Connecting...' : 'Connect to Patient'}
+              {connecting ? 'Connecting...' : 'Connect to elder'}
             </button>
           </form>
         </div>

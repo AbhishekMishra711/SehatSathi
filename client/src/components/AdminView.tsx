@@ -171,7 +171,7 @@ export const AdminView: React.FC = () => {
           marginBottom: '28px'
         }}>
           <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Total Registered Patients</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Total registered seniors</div>
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginTop: '4px' }}>
               {metrics.totalElders}
             </div>
@@ -262,7 +262,7 @@ export const AdminView: React.FC = () => {
               Manual Escalation Cron Trigger
             </h3>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
-              Executes the deterministic escalation engine across all active patient profiles immediately, checking due doses, 
+              Executes the escalation check across all active elder profiles immediately, checking due doses, 
               evaluating grace periods, and dispatching notification emails.
             </p>
             <button

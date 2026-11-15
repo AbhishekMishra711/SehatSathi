@@ -16,7 +16,7 @@ async function parsePrescriptionText(prescriptionText) {
     throw new Error('Gemini API key is not configured');
   }
 
-  const systemPrompt = `You are a medical assistant helping structure medication schedules for an elderly patient.
+  const systemPrompt = `You are a medical assistant helping structure medication schedules for a senior citizen.
 Extract medication details from the user's prescription description.
 Respond ONLY with a valid JSON object matching this schema:
 {

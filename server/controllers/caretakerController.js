@@ -40,7 +40,7 @@ async function linkPatientWithCode(req, res, next) {
     });
 
     if (!elderProfile) {
-      return res.status(404).json({ success: false, error: 'Patient Link Code not found' });
+      return res.status(404).json({ success: false, error: 'Elder link code not found' });
     }
 
     const existingLink = await prisma.caregiverLink.findUnique({
@@ -54,9 +54,9 @@ async function linkPatientWithCode(req, res, next) {
 
     if (existingLink) {
       if (existingLink.status === 'REVOKED') {
-        return res.status(403).json({ success: false, error: 'The patient has revoked access for your account' });
+        return res.status(403).json({ success: false, error: 'The elder has revoked access for your account' });
       }
-      return res.json({ success: true, message: 'Already connected to this patient', elderProfileId: elderProfile.id });
+      return res.json({ success: true, message: 'Already connected to this elder', elderProfileId: elderProfile.id });
     }
 
     await prisma.caregiverLink.create({
@@ -76,7 +76,7 @@ async function linkPatientWithCode(req, res, next) {
         elderProfileId: elderProfile.id,
         performedById: req.user.id,
         action: 'CAREGIVER_CONNECTED',
-        details: `${req.user.name} connected as ${relationship} via Patient Link Code`
+        details: `${req.user.name} connected as ${relationship} via elder link code`
       }
     });
 

@@ -103,9 +103,10 @@ export const ElderCompanion: React.FC = () => {
   };
 
   const sampleQuestions = [
+    "Aaj mujhe kaunsi dawai leni hai?",
     "What medicine is due next?",
-    "When is my next doctor appointment?",
-    "What should I eat with my evening medicines?"
+    "Agli doctor visit kab hai?",
+    "What should I eat with my medicines?"
   ];
 
   return (
@@ -121,9 +122,9 @@ export const ElderCompanion: React.FC = () => {
         gap: '8px',
         color: 'var(--c-deep-ocean)'
       }}>
-        <Sparkles size={18} />
+        <MessageSquare size={18} />
         <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-          Sathi Health Assistant: Ask about your doses, appointments, or wellness routines.
+          Ask about your doses, appointments, or meal routines.
         </span>
       </div>
 
@@ -164,7 +165,7 @@ export const ElderCompanion: React.FC = () => {
         {messages.length === 0 ? (
           <div style={{ textAlign: 'center', margin: 'auto', color: 'var(--text-muted)' }}>
             <MessageSquare size={36} color="var(--c-ocean-teal)" style={{ margin: '0 auto 8px auto' }} />
-            <p style={{ fontSize: '1rem', fontWeight: 600 }}>Namaste! How can I assist you with your health routine today?</p>
+            <p style={{ fontSize: '1rem', fontWeight: 600 }}>Namaste. Ask a question about your medication schedule or appointments.</p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -213,6 +214,37 @@ export const ElderCompanion: React.FC = () => {
               </div>
             );
           })
+        )}
+        {isSending && (
+          <div
+            style={{
+              alignSelf: 'flex-start',
+              maxWidth: '85%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start'
+            }}
+          >
+            <div style={{
+              padding: '12px 18px',
+              borderRadius: '14px 14px 14px 2px',
+              backgroundColor: '#E8F8EE',
+              border: '1px solid #A7F3D0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <MessageSquare size={16} color="#00AC73" />
+              <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#0F172A' }}>
+                Checking schedule...
+              </span>
+              <div style={{ display: 'inline-flex', gap: '4px', alignItems: 'center', marginLeft: '6px' }}>
+                <span className="companion-typing-dot" />
+                <span className="companion-typing-dot" />
+                <span className="companion-typing-dot" />
+              </div>
+            </div>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>

@@ -87,7 +87,7 @@ export const App: React.FC = () => {
           borderTop: '1px solid var(--border-color)',
           backgroundColor: '#FFFFFF'
         }}>
-          SehatSathi &bull; Dignified Senior Care &bull; Prompt Wars X Catalyst 2026
+          SehatSathi &bull; Senior medication reminders &bull; Prompt Wars X Catalyst 2026
         </footer>
       )}
     </div>

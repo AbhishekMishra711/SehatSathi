@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
             SehatSathi
           </span>
           <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#00A86B', letterSpacing: '0.8px' }}>
-            DIGNIFIED SENIOR CARE
+            SENIOR MEDICATION CARE
           </span>
         </div>
       </div>
@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
               color: user.role === 'ELDER' ? '#00875A' : '#0369A1',
               border: user.role === 'ELDER' ? '1px solid #A7F3D0' : '1px solid #BAE6FD'
             }}>
-              {user.role === 'ELDER' ? 'Patient' : user.role === 'ADMIN' ? 'Administrator' : user.role === 'CARETAKER' ? 'Primary Caretaker' : 'Family Member'}
+              {user.role === 'ELDER' ? 'Senior' : user.role === 'ADMIN' ? 'Administrator' : user.role === 'CARETAKER' ? 'Primary Caretaker' : 'Family Member'}
             </span>
           </div>
 
@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
             aria-label="Sign out of account"
           >
             <LogOut size={15} color="#64748B" />
-            <span>Sign Out</span>
+            <span>Sign out</span>
           </button>
         </div>
       )}
