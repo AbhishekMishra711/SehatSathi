@@ -10,9 +10,13 @@ router.post('/link-patient', caretakerController.linkPatientWithCode);
 router.get('/overview/:elderProfileId', caretakerController.getElderOverview);
 router.get('/medications/:elderProfileId', caretakerController.getMedications);
 router.post('/medications/:elderProfileId', caretakerController.addMedication);
+router.put('/medications/:elderProfileId/:medicationId', caretakerController.updateMedication);
+router.delete('/medications/:elderProfileId/:medicationId', caretakerController.deleteMedication);
 router.post('/parse-prescription', caretakerController.parsePrescriptionAI);
 router.get('/appointments/:elderProfileId', caretakerController.getAppointments);
 router.post('/appointments/:elderProfileId', caretakerController.addAppointment);
+router.put('/appointments/:elderProfileId/:appointmentId', caretakerController.updateAppointment);
+router.delete('/appointments/:elderProfileId/:appointmentId', caretakerController.deleteAppointment);
 router.get('/audit-trail/:elderProfileId', caretakerController.getAuditTrail);
 router.post('/simulate-escalation/:elderProfileId', caretakerController.simulateEscalation);
 

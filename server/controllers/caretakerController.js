@@ -234,6 +234,134 @@ async function addMedication(req, res, next) {
   }
 }
 
+async function updateMedication(req, res, next) {
+  try {
+    const { elderProfileId, medicationId } = req.params;
+    const link = await getAuthorizedLink(req.user.id, elderProfileId);
+
+    if (!link.canEditMeds) {
+      return res.status(403).json({ success: false, error: 'Elder has restricted medication editing for your account' });
+    }
+
+    const schema = z.object({
+      name: z.string().min(1),
+      dosage: z.string().min(1),
+      instructions: z.string().min(1),
+      frequency: z.string().min(1),
+      timeSlots: z.array(z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/))
+    });
+
+    const data = schema.parse(req.body);
+
+    const existing = await prisma.medication.findFirst({
+      where: { id: medicationId, elderProfileId }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ success: false, error: 'Medication not found' });
+    }
+
+    const updated = await prisma.medication.update({
+      where: { id: medicationId },
+      data: {
+        name: data.name,
+        dosage: data.dosage,
+        instructions: data.instructions,
+        frequency: data.frequency,
+        timeSlots: data.timeSlots
+      }
+    });
+
+    // Update today's pending dose schedules for this medication to match new slots
+    const now = new Date();
+    const todayYMD = now.toISOString().split('T')[0];
+    const startOfToday = new Date(`${todayYMD}T00:00:00.000Z`);
+    const endOfToday = new Date(`${todayYMD}T23:59:59.999Z`);
+
+    // Delete existing pending doses for today
+    await prisma.doseSchedule.deleteMany({
+      where: {
+        medicationId: updated.id,
+        elderProfileId,
+        scheduledFor: { gte: startOfToday, lte: endOfToday },
+        status: 'PENDING'
+      }
+    });
+
+    // Recreate pending schedules for today's new time slots
+    for (const timeStr of data.timeSlots) {
+      const scheduledTime = new Date(`${todayYMD}T${timeStr}:00.000Z`);
+      await prisma.doseSchedule.create({
+        data: {
+          medicationId: updated.id,
+          elderProfileId,
+          scheduledFor: scheduledTime,
+          status: 'PENDING',
+          escalationLevel: 0
+        }
+      });
+    }
+
+    await prisma.auditLog.create({
+      data: {
+        elderProfileId,
+        performedById: req.user.id,
+        action: 'MEDICATION_UPDATED',
+        details: `${req.user.name} updated medication: ${updated.name} (${updated.dosage}) at [${updated.timeSlots.join(', ')}]`
+      }
+    });
+
+    res.json({ success: true, medication: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteMedication(req, res, next) {
+  try {
+    const { elderProfileId, medicationId } = req.params;
+    const link = await getAuthorizedLink(req.user.id, elderProfileId);
+
+    if (!link.canEditMeds) {
+      return res.status(403).json({ success: false, error: 'Elder has restricted medication editing for your account' });
+    }
+
+    const existing = await prisma.medication.findFirst({
+      where: { id: medicationId, elderProfileId }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ success: false, error: 'Medication not found' });
+    }
+
+    await prisma.medication.update({
+      where: { id: medicationId },
+      data: { isActive: false }
+    });
+
+    // Delete any pending schedules
+    await prisma.doseSchedule.deleteMany({
+      where: {
+        medicationId,
+        status: 'PENDING'
+      }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        elderProfileId,
+        performedById: req.user.id,
+        action: 'MEDICATION_DELETED',
+        details: `${req.user.name} removed medication: ${existing.name} (${existing.dosage})`
+      }
+    });
+
+    res.json({ success: true, message: 'Medication removed successfully' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function parsePrescriptionAI(req, res, next) {
   try {
     const schema = z.object({
@@ -304,6 +432,95 @@ async function addAppointment(req, res, next) {
     });
 
     res.status(201).json({ success: true, appointment });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateAppointment(req, res, next) {
+  try {
+    const { elderProfileId, appointmentId } = req.params;
+    const link = await getAuthorizedLink(req.user.id, elderProfileId);
+
+    if (!link.canEditAppointments) {
+      return res.status(403).json({ success: false, error: 'Elder has restricted appointment management for your account' });
+    }
+
+    const schema = z.object({
+      doctorName: z.string().min(1),
+      specialty: z.string().optional(),
+      location: z.string().optional(),
+      scheduledAt: z.string(),
+      notes: z.string().optional()
+    });
+
+    const data = schema.parse(req.body);
+
+    const existing = await prisma.appointment.findFirst({
+      where: { id: appointmentId, elderProfileId }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ success: false, error: 'Appointment not found' });
+    }
+
+    const updated = await prisma.appointment.update({
+      where: { id: appointmentId },
+      data: {
+        doctorName: data.doctorName,
+        specialty: data.specialty,
+        location: data.location,
+        scheduledAt: new Date(data.scheduledAt),
+        notes: data.notes
+      }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        elderProfileId,
+        performedById: req.user.id,
+        action: 'APPOINTMENT_UPDATED',
+        details: `${req.user.name} updated visit with ${updated.doctorName} on ${new Date(updated.scheduledAt).toLocaleDateString()}`
+      }
+    });
+
+    res.json({ success: true, appointment: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteAppointment(req, res, next) {
+  try {
+    const { elderProfileId, appointmentId } = req.params;
+    const link = await getAuthorizedLink(req.user.id, elderProfileId);
+
+    if (!link.canEditAppointments) {
+      return res.status(403).json({ success: false, error: 'Elder has restricted appointment management for your account' });
+    }
+
+    const existing = await prisma.appointment.findFirst({
+      where: { id: appointmentId, elderProfileId }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ success: false, error: 'Appointment not found' });
+    }
+
+    await prisma.appointment.delete({
+      where: { id: appointmentId }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        elderProfileId,
+        performedById: req.user.id,
+        action: 'APPOINTMENT_DELETED',
+        details: `${req.user.name} removed visit with ${existing.doctorName}`
+      }
+    });
+
+    res.json({ success: true, message: 'Appointment removed successfully' });
   } catch (err) {
     next(err);
   }
@@ -399,9 +616,13 @@ module.exports = {
   getElderOverview,
   getMedications,
   addMedication,
+  updateMedication,
+  deleteMedication,
   parsePrescriptionAI,
   getAppointments,
   addAppointment,
+  updateAppointment,
+  deleteAppointment,
   getAuditTrail,
   simulateEscalation
 };

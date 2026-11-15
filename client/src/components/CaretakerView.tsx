@@ -10,7 +10,9 @@ import {
   Plus, 
   AlertTriangle, 
   Clock, 
-  Link as LinkIcon
+  Link as LinkIcon,
+  Edit2,
+  Trash2
 } from 'lucide-react';
 
 interface CaretakerViewProps {
@@ -39,6 +41,27 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
     timeSlots: '08:00, 20:00'
   });
   const [aptForm, setAptForm] = useState({
+    doctorName: '',
+    specialty: '',
+    location: '',
+    scheduledAt: '',
+    notes: ''
+  });
+
+  // Editing state for medication & appointment
+  const [editingMed, setEditingMed] = useState<Medication | null>(null);
+  const [showEditMedModal, setShowEditMedModal] = useState(false);
+  const [editMedForm, setEditMedForm] = useState({
+    name: '',
+    dosage: '',
+    instructions: '',
+    frequency: 'TWICE_DAILY',
+    timeSlots: '08:00, 20:00'
+  });
+
+  const [editingApt, setEditingApt] = useState<Appointment | null>(null);
+  const [showEditAptModal, setShowEditAptModal] = useState(false);
+  const [editAptForm, setEditAptForm] = useState({
     doctorName: '',
     specialty: '',
     location: '',
@@ -178,6 +201,120 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
       }
     } catch (err: any) {
       alert(err.message || 'Could not schedule appointment.');
+    }
+  };
+
+  const handleOpenEditMed = (med: Medication) => {
+    setEditingMed(med);
+    setEditMedForm({
+      name: med.name,
+      dosage: med.dosage,
+      instructions: med.instructions,
+      frequency: med.frequency,
+      timeSlots: med.timeSlots.join(', ')
+    });
+    setShowEditMedModal(true);
+  };
+
+  const handleUpdateMedication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!elderProfileId || !editingMed) return;
+
+    try {
+      const slotsArray = editMedForm.timeSlots
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => /^([01]\d|2[0-3]):([0-5]\d)$/.test(s));
+
+      if (slotsArray.length === 0) {
+        alert('Please specify at least one valid time in HH:MM 24-hour format (e.g. 08:30).');
+        return;
+      }
+
+      const res = await apiRequest<any>(`/api/caretaker/medications/${elderProfileId}/${editingMed.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: editMedForm.name,
+          dosage: editMedForm.dosage,
+          instructions: editMedForm.instructions,
+          frequency: editMedForm.frequency,
+          timeSlots: slotsArray
+        })
+      });
+
+      if (res.success) {
+        setShowEditMedModal(false);
+        setEditingMed(null);
+        loadAllData(elderProfileId);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not update medication.');
+    }
+  };
+
+  const handleDeleteMedication = async (medId: string, medName: string) => {
+    if (!elderProfileId) return;
+    if (!window.confirm(`Are you sure you want to remove ${medName}?`)) return;
+
+    try {
+      const res = await apiRequest<any>(`/api/caretaker/medications/${elderProfileId}/${medId}`, {
+        method: 'DELETE'
+      });
+      if (res.success) {
+        loadAllData(elderProfileId);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not remove medication.');
+    }
+  };
+
+  const handleOpenEditApt = (apt: Appointment) => {
+    setEditingApt(apt);
+    const dateObj = new Date(apt.scheduledAt);
+    const localIso = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    setEditAptForm({
+      doctorName: apt.doctorName,
+      specialty: apt.specialty || '',
+      location: apt.location || '',
+      scheduledAt: localIso,
+      notes: apt.notes || ''
+    });
+    setShowEditAptModal(true);
+  };
+
+  const handleUpdateAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!elderProfileId || !editingApt) return;
+
+    try {
+      const res = await apiRequest<any>(`/api/caretaker/appointments/${elderProfileId}/${editingApt.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(editAptForm)
+      });
+
+      if (res.success) {
+        setShowEditAptModal(false);
+        setEditingApt(null);
+        loadAllData(elderProfileId);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not update appointment.');
+    }
+  };
+
+  const handleDeleteAppointment = async (aptId: string, doctorName: string) => {
+    if (!elderProfileId) return;
+    if (!window.confirm(`Are you sure you want to remove appointment with ${doctorName}?`)) return;
+
+    try {
+      const res = await apiRequest<any>(`/api/caretaker/appointments/${elderProfileId}/${aptId}`, {
+        method: 'DELETE'
+      });
+      if (res.success) {
+        loadAllData(elderProfileId);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not remove appointment.');
     }
   };
 
@@ -651,16 +788,60 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                         {med.dosage} &bull; {med.frequency}
                       </div>
                     </div>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '3px 8px',
-                      borderRadius: '6px',
-                      backgroundColor: 'var(--status-taken-bg)',
-                      color: 'var(--status-taken)'
-                    }}>
-                      Active
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        backgroundColor: 'var(--status-taken-bg)',
+                        color: 'var(--status-taken)'
+                      }}>
+                        Active
+                      </span>
+                      {permissions.canEditMeds && (
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditMed(med)}
+                            title="Edit medication"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '30px',
+                              height: '30px',
+                              borderRadius: '6px',
+                              border: '1px solid var(--border-color)',
+                              backgroundColor: 'var(--bg-subtle)',
+                              color: 'var(--c-deep-ocean)',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMedication(med.id, med.name)}
+                            title="Remove medication"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '30px',
+                              height: '30px',
+                              borderRadius: '6px',
+                              border: '1px solid var(--border-color)',
+                              backgroundColor: '#FEE2E2',
+                              color: '#DC2626',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: '12px 0' }}>
@@ -740,13 +921,57 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                     )}
                   </div>
 
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)' }}>
-                      {new Date(apt.scheduledAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)' }}>
+                        {new Date(apt.scheduledAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        {new Date(apt.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      {new Date(apt.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
+                    {permissions.canEditAppointments && (
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditApt(apt)}
+                          title="Edit appointment"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '6px',
+                            border: '1px solid var(--border-color)',
+                            backgroundColor: 'var(--bg-subtle)',
+                            color: 'var(--c-deep-ocean)',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAppointment(apt.id, apt.doctorName)}
+                          title="Remove appointment"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '6px',
+                            border: '1px solid var(--border-color)',
+                            backgroundColor: '#FEE2E2',
+                            color: '#DC2626',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1075,6 +1300,209 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                   style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: 'var(--c-deep-ocean)', color: '#FFFFFF', fontWeight: 700 }}
                 >
                   Confirm Visit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Medication Modal */}
+      {showEditMedModal && editingMed && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          zIndex: 100
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '12px',
+            maxWidth: '560px',
+            width: '100%',
+            padding: '28px',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
+              Edit Medication
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+              Update dosage, instructions, or daily time slots for {editingMed.name}.
+            </p>
+
+            <form onSubmit={handleUpdateMedication}>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                  Medication Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editMedForm.name}
+                  onChange={(e) => setEditMedForm({ ...editMedForm, name: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                  Dosage
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editMedForm.dosage}
+                  onChange={(e) => setEditMedForm({ ...editMedForm, dosage: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                  Senior Instructions
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editMedForm.instructions}
+                  onChange={(e) => setEditMedForm({ ...editMedForm, instructions: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                  Daily Time Slots (24hr format, comma-separated)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editMedForm.timeSlots}
+                  onChange={(e) => setEditMedForm({ ...editMedForm, timeSlots: e.target.value })}
+                  placeholder="08:00, 20:00"
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowEditMedModal(false)}
+                  style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid var(--border-strong)', fontWeight: 600 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '10px 18px', borderRadius: '6px', backgroundColor: 'var(--c-deep-ocean)', color: '#FFFFFF', fontWeight: 700 }}
+                >
+                  Update Medication
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Appointment Modal */}
+      {showEditAptModal && editingApt && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          zIndex: 100
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '12px',
+            maxWidth: '480px',
+            width: '100%',
+            padding: '24px'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '16px' }}>
+              Edit Doctor Appointment
+            </h3>
+            <form onSubmit={handleUpdateAppointment}>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Doctor Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editAptForm.doctorName}
+                  onChange={(e) => setEditAptForm({ ...editAptForm, doctorName: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Specialty</label>
+                <input
+                  type="text"
+                  value={editAptForm.specialty}
+                  onChange={(e) => setEditAptForm({ ...editAptForm, specialty: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Location / Clinic</label>
+                <input
+                  type="text"
+                  value={editAptForm.location}
+                  onChange={(e) => setEditAptForm({ ...editAptForm, location: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Date & Time</label>
+                <input
+                  type="datetime-local"
+                  required
+                  value={editAptForm.scheduledAt}
+                  onChange={(e) => setEditAptForm({ ...editAptForm, scheduledAt: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Notes</label>
+                <input
+                  type="text"
+                  value={editAptForm.notes}
+                  onChange={(e) => setEditAptForm({ ...editAptForm, notes: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowEditAptModal(false)}
+                  style={{ padding: '8px 14px', borderRadius: '6px', border: '1px solid var(--border-strong)', fontWeight: 600 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: 'var(--c-deep-ocean)', color: '#FFFFFF', fontWeight: 700 }}
+                >
+                  Update Visit
                 </button>
               </div>
             </form>

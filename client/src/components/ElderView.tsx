@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiRequest } from '../services/api';
-import { DoseSchedule, Appointment, CaregiverLink } from '../types';
+import { DoseSchedule, Appointment, CaregiverLink, Medication } from '../types';
 import { speakText } from '../services/speech';
 import { ElderCompanion } from './ElderCompanion';
 import { 
@@ -12,13 +12,15 @@ import {
   Clock, 
   MessageSquare,
   Copy,
-  Check
+  Check,
+  Pill
 } from 'lucide-react';
 
 export const ElderView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'schedule' | 'companion' | 'appointments' | 'people'>('schedule');
+  const [activeTab, setActiveTab] = useState<'schedule' | 'overview' | 'companion' | 'appointments' | 'people'>('schedule');
   const [nextDose, setNextDose] = useState<DoseSchedule | null>(null);
   const [allDoses, setAllDoses] = useState<DoseSchedule[]>([]);
+  const [allMedications, setAllMedications] = useState<Medication[]>([]);
   const [emergencyPhone, setEmergencyPhone] = useState<string | null>(null);
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -73,10 +75,21 @@ export const ElderView: React.FC = () => {
     }
   };
 
+  const loadMedications = async () => {
+    try {
+      const res = await apiRequest<{ success: boolean; medications: Medication[] }>('/api/elder/medications');
+      if (res.success && res.medications) {
+        setAllMedications(res.medications);
+      }
+    } catch (err) {
+      console.error('Failed to load medications', err);
+    }
+  };
+
   useEffect(() => {
     const fetchAll = async () => {
       setIsLoading(true);
-      await Promise.all([loadSchedule(), loadAppointments(), loadCaregivers()]);
+      await Promise.all([loadSchedule(), loadAppointments(), loadCaregivers(), loadMedications()]);
       setIsLoading(false);
     };
     fetchAll();
@@ -103,6 +116,12 @@ export const ElderView: React.FC = () => {
   const handleReadAloud = (dose: DoseSchedule) => {
     const timeFormatted = new Date(dose.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const text = `Time for ${dose.medication.name}, ${dose.medication.dosage}. ${dose.medication.instructions}. Scheduled for ${timeFormatted}.`;
+    speakText(text);
+  };
+
+  const handleReadMedicationAloud = (med: Medication) => {
+    const times = med.timeSlots.join(' and ');
+    const text = `${med.name}, ${med.dosage}. ${med.instructions}. Scheduled daily at ${times}.`;
     speakText(text);
   };
 
@@ -325,6 +344,25 @@ export const ElderView: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveTab('overview')}
+          style={{
+            flex: 1,
+            padding: '14px 0',
+            fontSize: '1rem',
+            fontWeight: 700,
+            color: activeTab === 'overview' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'overview' ? '3px solid var(--c-deep-ocean)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px'
+          }}
+        >
+          <Pill size={18} />
+          <span>Overview</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('companion')}
           style={{
             flex: 1,
@@ -481,6 +519,105 @@ export const ElderView: React.FC = () => {
                 </div>
               );
             })
+          )}
+        </div>
+      )}
+
+      {/* Tab: Overview / All Prescribed Medications */}
+      {activeTab === 'overview' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: 0 }}>
+              All Prescribed Medications
+            </h2>
+            <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              {allMedications.length} {allMedications.length === 1 ? 'medicine' : 'medicines'}
+            </span>
+          </div>
+
+          {allMedications.length === 0 ? (
+            <div style={{ padding: '36px 20px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <Pill size={36} color="var(--c-ocean-teal)" style={{ margin: '0 auto 8px auto' }} />
+              <p style={{ color: 'var(--text-muted)', fontWeight: 600, margin: 0 }}>
+                No medications have been added yet. Your caretaker or family member can add schedules for you.
+              </p>
+            </div>
+          ) : (
+            allMedications.map((med) => (
+              <div
+                key={med.id}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '10px',
+                  padding: '20px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: '0 0 4px 0' }}>
+                      {med.name}
+                    </h3>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--c-ocean-teal)' }}>
+                      {med.dosage} &bull; {med.frequency}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleReadMedicationAloud(med)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--primary-light)',
+                      color: 'var(--c-deep-ocean)',
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                    aria-label={`Listen to instructions for ${med.name}`}
+                  >
+                    <Volume2 size={18} />
+                    <span>Listen</span>
+                  </button>
+                </div>
+
+                <p style={{ fontSize: '1rem', color: 'var(--text-main)', margin: '10px 0 14px 0', lineHeight: 1.5 }}>
+                  {med.instructions}
+                </p>
+
+                <div style={{
+                  borderTop: '1px solid var(--border-color)',
+                  paddingTop: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Clock size={16} color="var(--text-muted)" />
+                    <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                      Daily times: {med.timeSlots.join(', ')}
+                    </span>
+                  </div>
+                  <span style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: 'var(--status-taken-bg)',
+                    color: 'var(--status-taken)'
+                  }}>
+                    Active schedule
+                  </span>
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}
