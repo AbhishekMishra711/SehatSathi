@@ -1,4 +1,4 @@
-# SehatSathi (सेहत साथी)
+# SehatSathi
 
 > **Medicine reminders that tell the family when a dose is missed.**
 
