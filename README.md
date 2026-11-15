@@ -2,7 +2,7 @@
 
 > **Medicine reminders that tell the family when a dose is missed.**
 
-[![Deployed Prototype](https://img.shields.io/badge/Live%20Prototype-View%20App-00AC73?style=for-the-badge)](YOUR_DEPLOYED_URL_HERE)
+[![Deployed Prototype](https://img.shields.io/badge/Live%20Prototype-View%20App-00AC73?style=for-the-badge)](sehatsathi-one.vercel.app)
 [![Tests Passing](https://img.shields.io/badge/Tests-17%20Passed-brightgreen?style=for-the-badge)](./tests)
 [![Code Quality](https://img.shields.io/badge/Security-Bcrypt%20%7C%20OTP%20%7C%20Audit%20Log-blue?style=for-the-badge)](./server)
 
