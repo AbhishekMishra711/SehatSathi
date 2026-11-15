@@ -38,23 +38,36 @@ async function createAndSendOtp(email, purpose = 'REGISTER') {
     : 'SehatSathi - Your Verification Code';
 
   const htmlText = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1.5px solid #009F6B; border-radius: 12px; background-color: #FFFFFF;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 20px; background-color: #FFFFFF; color: #1F2937;">
       ${mailer.getEmailBrandedHeader()}
-      <h3 style="color: #009F6B; margin: 0 0 10px 0; font-size: 19px; font-weight: 800;">
-        ${purpose === 'ADMIN_LOGIN' ? 'Admin 2FA Verification Code' : 'Security Verification Code'}
-      </h3>
-      <p style="font-size: 15px; color: #0F172A; line-height: 1.5; margin-bottom: 16px;">
-        ${purpose === 'ADMIN_LOGIN' ? 'Use the following one-time code to authenticate your administrative master session:' : 'Hello, use the following one-time verification code to complete your verification:'}
+      
+      <p style="font-size: 15px; color: #1F2937; line-height: 1.5; margin: 0 0 16px 0;">
+        We're verifying a recent ${purpose === 'ADMIN_LOGIN' ? 'administrator sign-in' : 'account verification'} request for <strong style="color: #184e77;">${normalizedEmail}</strong>:
       </p>
-      <div style="background-color: #F0FDF4; border: 2px dashed #00AC73; border-radius: 10px; padding: 20px; text-align: center; margin: 24px 0;">
-        <span style="font-size: 38px; font-weight: 800; letter-spacing: 8px; color: #009F6B;">${otp}</span>
+
+      <div style="margin: 22px 0 24px 0; padding: 18px 24px; background-color: #F8FAFC; border-radius: 8px; border-left: 4px solid #168aad;">
+        <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px;">One-Time Verification Code</span>
+        <span style="font-size: 34px; font-weight: 800; letter-spacing: 6px; color: #184e77; font-family: monospace;">${otp}</span>
       </div>
-      <p style="font-size: 13px; color: #475569; line-height: 1.5;">
-        This code is valid for <strong>5 minutes</strong>. If you did not request this, please disregard this email.
+
+      <table cellpadding="0" cellspacing="0" border="0" style="font-size: 14px; color: #475569; margin: 0 0 24px 0; line-height: 1.6;">
+        <tr>
+          <td style="font-weight: 700; padding-right: 12px; color: #1F2937;">Timestamp:</td>
+          <td>${new Date().toUTCString()}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 700; padding-right: 12px; color: #1F2937;">Code Expiry:</td>
+          <td><strong>5 Minutes</strong> (Strictly single-use)</td>
+        </tr>
+      </table>
+
+      <p style="font-size: 14px; color: #475569; line-height: 1.5; margin: 0 0 16px 0;">
+        You're receiving this message because of a verification action on SehatSathi. <strong>If you did not request this verification, please disregard this email.</strong>
       </p>
-      <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 24px 0 16px 0;" />
-      <p style="font-size: 12px; color: #64748B; margin: 0;">
-        SehatSathi &bull; Dignified Senior Care &bull; Prompt Wars X Catalyst 2026
+
+      <p style="font-size: 14px; color: #1F2937; margin: 28px 0 0 0;">
+        Thanks,<br />
+        <strong>The SehatSathi Care & Security Team</strong>
       </p>
     </div>
   `;

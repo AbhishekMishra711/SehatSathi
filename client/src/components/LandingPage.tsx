@@ -15,7 +15,10 @@ import {
   Shield,
   BellRing,
   AlertTriangle,
-  PhoneCall
+  PhoneCall,
+  Heart,
+  Eye,
+  KeyRound
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -33,7 +36,7 @@ interface FeatureDetail {
 export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaultAdminOpen }) => {
   const [modalRole, setModalRole] = useState<'ELDER' | 'CARETAKER' | 'ADMIN' | null>(defaultAdminOpen ? 'ADMIN' : null);
   const [activeFeatureModal, setActiveFeatureModal] = useState<FeatureDetail | null>(null);
-  const [showKnowMoreModal, setShowKnowMoreModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   // Persistent Scroll Reveal Observer
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -128,45 +131,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Banner Navigation: Prominent, Spacious, Emerald Green Background (#009F6B & #9BE5AA) */}
+      {/* Top Banner Navigation: Deep Ocean Navy (#184e77) - Zero Green Blend, Authoritative & Crisp */}
       <nav style={{
-        backgroundColor: '#009F6B',
-        borderBottom: '4px solid #9BE5AA',
-        padding: '24px 44px',
+        backgroundColor: 'var(--c-deep-ocean)',
+        borderBottom: '4px solid #00AC73',
+        padding: '24px 56px',
+        minHeight: '104px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        boxShadow: '0 8px 25px rgba(0, 159, 107, 0.28)'
+        boxShadow: '0 8px 30px rgba(24, 78, 119, 0.28)'
       }}>
         {/* User-Provided Hands-Heart Logo and Brand Name with animated entrance */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <img
             src="/logo.png"
             alt="SehatSathi Care Logo"
             className="animate-logo-entrance logo-pulse"
             style={{
-              width: '64px',
-              height: '64px',
+              width: '72px',
+              height: '72px',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2))'
+              filter: 'drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35))'
             }}
           />
           <div className="animate-title-slide">
             <span style={{
-              fontSize: '2rem',
+              fontSize: '2.15rem',
               fontWeight: 800,
               color: '#FFFFFF',
-              letterSpacing: '-0.025em',
+              letterSpacing: '-0.03em',
               display: 'block',
               lineHeight: 1.1
             }}>
               SehatSathi
             </span>
             <span style={{
-              fontSize: '0.82rem',
+              fontSize: '0.85rem',
               fontWeight: 800,
               color: '#9BE5AA',
               letterSpacing: '1.2px'
@@ -176,38 +180,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           </div>
         </div>
 
-        {/* Action Buttons: Know More, Patient, and Caretaker */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+        {/* Action Buttons: Safety & Privacy, Patient, and Caretaker */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => setShowKnowMoreModal(true)}
+            onClick={() => setShowPrivacyModal(true)}
             style={{
-              padding: '12px 20px',
+              padding: '12px 22px',
               borderRadius: '10px',
-              backgroundColor: 'rgba(255, 255, 255, 0.16)',
-              border: '1.5px solid rgba(255, 255, 255, 0.4)',
+              backgroundColor: 'rgba(255, 255, 255, 0.14)',
+              border: '1.5px solid rgba(255, 255, 255, 0.38)',
               color: '#FFFFFF',
               fontWeight: 800,
-              fontSize: '0.94rem',
+              fontSize: '0.95rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '8px',
+              cursor: 'pointer'
             }}
           >
-            <ShieldCheck size={18} color="#9BE5AA" />
-            <span>Architecture & Security</span>
+            <ShieldCheck size={20} color="#9BE5AA" />
+            <span>Safety & Privacy</span>
           </button>
 
           <button
             onClick={() => setModalRole('ELDER')}
             style={{
-              padding: '12px 24px',
+              padding: '12px 26px',
               borderRadius: '10px',
               border: 'none',
-              backgroundColor: '#9BE5AA',
-              color: '#004D34',
+              backgroundColor: '#00AC73',
+              color: '#FFFFFF',
               fontWeight: 800,
-              fontSize: '0.98rem',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+              fontSize: '1rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(0, 172, 115, 0.35)'
             }}
           >
             Patient
@@ -216,17 +222,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           <button
             onClick={() => setModalRole('CARETAKER')}
             style={{
-              padding: '12px 26px',
+              padding: '12px 28px',
               borderRadius: '10px',
               border: 'none',
               backgroundColor: '#FFFFFF',
-              color: '#009F6B',
+              color: 'var(--c-deep-ocean)',
               fontWeight: 800,
-              fontSize: '0.98rem',
+              fontSize: '1rem',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.18)'
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
             }}
           >
             <span>Caretaker / Family</span>
@@ -235,113 +242,118 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         </div>
       </nav>
 
-      {/* Hero Section with High-Contrast Typography & Unified Dual-Portal Console */}
+      {/* Hero Section: Wide, Expansive Layout (Completely Fills Sides, No Empty Gaps) */}
       <section style={{
-        maxWidth: '1140px',
+        maxWidth: '1380px',
         margin: '0 auto',
-        padding: '56px 20px 48px 20px',
-        textAlign: 'center'
+        padding: '56px 28px 48px 28px',
+        textAlign: 'center',
+        width: '100%'
       }} className="animate-hero">
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '8px 20px',
+          padding: '8px 22px',
           borderRadius: '30px',
           backgroundColor: '#E8F8EE',
           color: '#009F6B',
-          fontSize: '0.92rem',
+          fontSize: '0.94rem',
           fontWeight: 800,
           marginBottom: '26px',
-          border: '1px solid #9BE5AA',
-          boxShadow: '0 2px 8px rgba(155, 229, 170, 0.4)'
+          border: '1.5px solid #9BE5AA',
+          boxShadow: '0 2px 10px rgba(155, 229, 170, 0.45)'
         }}>
-          <ShieldCheck size={19} color="#009F6B" />
+          <ShieldCheck size={20} color="#009F6B" />
           <span>Patient-Centered Elderly Care & Medication Management</span>
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(2.7rem, 6.2vw, 4.2rem)',
+          fontSize: 'clamp(3.1rem, 6.4vw, 4.8rem)',
           fontWeight: 800,
           letterSpacing: '-0.035em',
           lineHeight: 1.12,
-          maxWidth: '920px',
-          margin: '0 auto 22px auto'
+          maxWidth: '1200px',
+          margin: '0 auto 24px auto'
         }}>
           <span style={{ color: 'var(--c-deep-ocean)', display: 'block' }}>
             Dignified Healthcare for Seniors.
           </span>
-          <span style={{ color: '#009F6B', display: 'block' }}>
+          <span style={{ color: '#00AC73', display: 'block' }}>
             Peace of Mind for Families.
           </span>
         </h1>
 
         <p style={{
-          fontSize: '1.25rem',
+          fontSize: '1.3rem',
           fontWeight: 500,
           color: 'var(--text-muted)',
-          maxWidth: '760px',
-          margin: '0 auto 40px auto',
+          maxWidth: '960px',
+          margin: '0 auto 44px auto',
           lineHeight: 1.6
         }}>
           SehatSathi empowers seniors with an accessible, high-contrast mobile interface, voice audio assistant, 
           and an intelligent escalation chain that keeps family notified when doses are missed.
         </p>
 
-        {/* Unified Dual-Portal Console with Invisible Partition */}
+        {/* Unified Dual-Portal Console: Expansive Width (1240px) Eliminating Empty Left/Right Spaces */}
         <div style={{
           backgroundColor: '#FFFFFF',
-          borderRadius: '20px',
+          borderRadius: '24px',
           border: '1.5px solid var(--border-color)',
-          boxShadow: '0 12px 30px -10px rgba(0, 159, 107, 0.12)',
-          maxWidth: '880px',
+          boxShadow: '0 16px 40px -12px rgba(24, 78, 119, 0.12)',
+          maxWidth: '1240px',
           margin: '0 auto',
           overflow: 'hidden',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))'
         }}>
           {/* Senior Patient Side */}
           <div style={{
-            padding: '36px 32px',
+            padding: '44px 40px',
             textAlign: 'left',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            borderRight: '1px solid var(--border-color)',
+            borderRight: '1.5px solid var(--border-color)',
             background: 'linear-gradient(180deg, #FFFFFF 0%, #F9FCF9 100%)'
           }}>
             <div>
               <span style={{
                 display: 'inline-block',
-                fontSize: '0.78rem',
+                fontSize: '0.8rem',
                 fontWeight: 800,
-                padding: '4px 12px',
-                borderRadius: '12px',
+                padding: '5px 14px',
+                borderRadius: '14px',
                 backgroundColor: '#9BE5AA',
                 color: '#004D34',
-                marginBottom: '14px'
+                marginBottom: '16px'
               }}>
                 SENIOR PATIENT PORTAL
               </span>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '10px' }}>
+              <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '12px' }}>
                 Simple, Dignified Senior View
               </h2>
-              <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
-                Designed specifically for aging eyes and simple touch. No complex forms or confusing steps.
+              <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '24px' }}>
+                Designed specifically for aging eyes and one-touch interaction. Large targets, high contrast, zero confusion.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#009F6B" />
-                  <span>One-touch 4-digit PIN access</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#00AC73" style={{ flexShrink: 0 }} />
+                  <span>One-touch 4-digit PIN access (no passwords to remember)</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#009F6B" />
-                  <span>Sathi Voice & Audio Assistant for medications</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#00AC73" style={{ flexShrink: 0 }} />
+                  <span>Sathi Voice & Audio Assistant for medications and routine</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#009F6B" />
-                  <span>Full control to grant or revoke caretaker links</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#00AC73" style={{ flexShrink: 0 }} />
+                  <span>High-contrast visual cards with built-in voice read-aloud</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#00AC73" style={{ flexShrink: 0 }} />
+                  <span>Senior-owned privacy: Instant permission grant & revocation</span>
                 </div>
               </div>
             </div>
@@ -350,27 +362,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               onClick={() => setModalRole('ELDER')}
               style={{
                 width: '100%',
-                padding: '16px 24px',
-                borderRadius: '10px',
-                backgroundColor: '#009F6B',
+                padding: '18px 26px',
+                borderRadius: '12px',
+                backgroundColor: '#00AC73',
                 color: '#FFFFFF',
                 fontWeight: 800,
-                fontSize: '1.05rem',
+                fontSize: '1.1rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 14px rgba(0, 159, 107, 0.35)'
+                gap: '10px',
+                boxShadow: '0 4px 16px rgba(0, 172, 115, 0.35)',
+                cursor: 'pointer'
               }}
             >
               <span>Enter as Senior Patient</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} />
             </button>
           </div>
 
           {/* Caretaker & Family Side */}
           <div style={{
-            padding: '36px 32px',
+            padding: '44px 40px',
             textAlign: 'left',
             display: 'flex',
             flexDirection: 'column',
@@ -380,35 +393,39 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             <div>
               <span style={{
                 display: 'inline-block',
-                fontSize: '0.78rem',
+                fontSize: '0.8rem',
                 fontWeight: 800,
-                padding: '4px 12px',
-                borderRadius: '12px',
+                padding: '5px 14px',
+                borderRadius: '14px',
                 backgroundColor: '#DCFCE7',
                 color: '#009F6B',
-                marginBottom: '14px'
+                marginBottom: '16px'
               }}>
-                CARE CIRCLE & FAMILY
+                CARE CIRCLE & FAMILY GUARDIAN
               </span>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '10px' }}>
+              <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '12px' }}>
                 Intelligent Safety Net
               </h2>
-              <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
-                Real-time visibility into medication adherence, doctor visits, and multi-tier escalation warnings.
+              <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '24px' }}>
+                Real-time visibility into medication adherence, doctor visits, and deterministic multi-tier escalation warnings.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#009F6B" />
-                  <span>3-tier automated missed dose escalation</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#168aad" style={{ flexShrink: 0 }} />
+                  <span>3-tier automated escalation for any unconfirmed dose</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#009F6B" />
-                  <span>Gemini-powered prescription schedule parser</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#168aad" style={{ flexShrink: 0 }} />
+                  <span>Gemini 2.0 AI prescription schedule parser with human verification</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                  <CheckCircle2 size={18} color="#009F6B" />
-                  <span>Complete tamper-evident audit history</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#168aad" style={{ flexShrink: 0 }} />
+                  <span>Complete tamper-evident audit history of all doses & alerts</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.96rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <CheckCircle2 size={20} color="#168aad" style={{ flexShrink: 0 }} />
+                  <span>Multi-caregiver coordination (nurse, primary child, family)</span>
                 </div>
               </div>
             </div>
@@ -417,22 +434,86 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               onClick={() => setModalRole('CARETAKER')}
               style={{
                 width: '100%',
-                padding: '16px 24px',
-                borderRadius: '10px',
+                padding: '18px 26px',
+                borderRadius: '12px',
                 backgroundColor: 'var(--c-deep-ocean)',
                 color: '#FFFFFF',
                 fontWeight: 800,
-                fontSize: '1.05rem',
+                fontSize: '1.1rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 14px rgba(24, 78, 119, 0.25)'
+                gap: '10px',
+                boxShadow: '0 4px 16px rgba(24, 78, 119, 0.25)',
+                cursor: 'pointer'
               }}
             >
               <span>Enter as Caretaker / Family</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} />
             </button>
+          </div>
+        </div>
+
+        {/* Wide 3-Column Trust Ribbon to Gracefully Anchor the Layout */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '20px',
+          maxWidth: '1240px',
+          margin: '36px auto 0 auto'
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            padding: '18px 24px',
+            borderRadius: '14px',
+            border: '1px solid var(--border-color)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            textAlign: 'left',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
+          }}>
+            <ShieldCheck size={30} color="#00AC73" style={{ flexShrink: 0 }} />
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--c-deep-ocean)' }}>100% Deterministic Safety</div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Mathematical cron timeline guarantees alerts</div>
+            </div>
+          </div>
+
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            padding: '18px 24px',
+            borderRadius: '14px',
+            border: '1px solid var(--border-color)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            textAlign: 'left',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
+          }}>
+            <Lock size={28} color="#168aad" style={{ flexShrink: 0 }} />
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--c-deep-ocean)' }}>Zero-Plaintext Security</div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Bcrypt hashing & 5-minute single-use OTPs</div>
+            </div>
+          </div>
+
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            padding: '18px 24px',
+            borderRadius: '14px',
+            border: '1px solid var(--border-color)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            textAlign: 'left',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
+          }}>
+            <Heart size={28} color="#00AC73" style={{ flexShrink: 0 }} />
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--c-deep-ocean)' }}>Elder-Centered Dignity</div>
+              <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Patients control their own caregivers & data</div>
+            </div>
           </div>
         </div>
       </section>
@@ -441,17 +522,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
       <section
         ref={sectionRef}
         style={{
-          maxWidth: '1180px',
+          maxWidth: '1240px',
           margin: '0 auto',
-          padding: '24px 20px 60px 20px'
+          padding: '24px 28px 60px 28px',
+          width: '100%'
         }}
         className={`scroll-reveal ${isSectionRevealed ? 'is-revealed' : ''}`}
       >
-        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em' }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em' }}>
             Built for Independence, Safety, and Trust
           </h2>
-          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+          <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', marginTop: '8px' }}>
             Explore how SehatSathi solves elder medication challenges seamlessly.
           </p>
         </div>
@@ -464,12 +546,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               style={{
                 backgroundColor: '#FFFFFF',
                 border: '1px solid var(--border-color)',
-                borderRadius: '14px',
-                padding: '26px',
+                borderRadius: '16px',
+                padding: '28px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.03)',
+                boxShadow: '0 4px 8px -1px rgba(0, 0, 0, 0.04)',
                 transition: 'transform 0.2s, box-shadow 0.2s'
               }}
               className="animate-card"
@@ -478,22 +560,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 <span style={{
                   fontSize: '0.75rem',
                   fontWeight: 800,
-                  padding: '3px 10px',
+                  padding: '4px 12px',
                   borderRadius: '12px',
                   backgroundColor: '#E8F8EE',
                   color: '#009F6B',
                   display: 'inline-block',
-                  marginBottom: '12px',
+                  marginBottom: '14px',
                   border: '1px solid #9BE5AA'
                 }}>
                   {feat.badge}
                 </span>
 
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '10px' }}>
                   {feat.title}
                 </h3>
 
-                <p style={{ fontSize: '0.93rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
+                <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: '22px' }}>
                   {feat.shortDesc}
                 </p>
               </div>
@@ -505,11 +587,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
-                  fontSize: '0.88rem',
+                  fontSize: '0.9rem',
                   fontWeight: 800,
-                  color: '#009F6B',
+                  color: '#00AC73',
                   padding: '6px 0',
-                  alignSelf: 'flex-start'
+                  alignSelf: 'flex-start',
+                  cursor: 'pointer'
                 }}
               >
                 <span>Read More</span>
@@ -522,18 +605,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
       {/* Escalation Workflow Banner - Redesigned Connected Pipeline */}
       <section style={{
-        maxWidth: '1180px',
+        maxWidth: '1240px',
         margin: '0 auto',
-        padding: '0 20px 60px 20px'
+        padding: '0 28px 64px 28px',
+        width: '100%'
       }}>
         <div style={{
           backgroundColor: '#FFFFFF',
           border: '1.5px solid var(--border-color)',
-          borderRadius: '20px',
-          padding: '44px 36px',
-          boxShadow: '0 12px 32px -8px rgba(0, 159, 107, 0.08)'
+          borderRadius: '24px',
+          padding: '48px 40px',
+          boxShadow: '0 12px 32px -8px rgba(24, 78, 119, 0.08)'
         }}>
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <span style={{
               display: 'inline-block',
               fontSize: '0.78rem',
@@ -541,16 +625,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               padding: '4px 14px',
               borderRadius: '20px',
               backgroundColor: '#F0FDF4',
-              color: '#009F6B',
+              color: '#00AC73',
               border: '1px solid #9BE5AA',
               marginBottom: '10px'
             }}>
               VERIFIED DETERMINISTIC PROTOCOL
             </span>
-            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
               Multi-Tier Safety Escalation Pipeline
             </h2>
-            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '680px', margin: '0 auto' }}>
+            <p style={{ fontSize: '1.02rem', color: 'var(--text-muted)', maxWidth: '680px', margin: '0 auto' }}>
               Pure mathematical time evaluation guarantees zero missed doses and zero duplicate notifications.
             </p>
           </div>
@@ -558,15 +642,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           {/* Connected 3-Stage Pipeline */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '20px'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+            gap: '24px'
           }}>
             {/* Stage 1 */}
             <div style={{
               backgroundColor: '#F0FDF4',
               border: '2px solid #00AC73',
               borderRadius: '16px',
-              padding: '24px',
+              padding: '26px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -575,8 +659,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <span style={{
-                    width: '36px',
-                    height: '36px',
+                    width: '38px',
+                    height: '38px',
                     borderRadius: '50%',
                     backgroundColor: '#00AC73',
                     color: '#FFFFFF',
@@ -584,7 +668,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 800,
-                    fontSize: '0.95rem'
+                    fontSize: '1rem'
                   }}>
                     01
                   </span>
@@ -592,15 +676,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     00:00 (Due Time)
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#004D34', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#004D34', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <BellRing size={20} color="#00AC73" />
                   <span>Patient PWA Audio Prompt</span>
                 </h3>
-                <p style={{ fontSize: '0.92rem', color: '#166534', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '0.93rem', color: '#166534', lineHeight: 1.55 }}>
                   Immediate audio chime & high-contrast on-screen prompt on senior’s phone. A single tap confirms medication taken.
                 </p>
               </div>
-              <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #BBF7D0', fontSize: '0.8rem', fontWeight: 700, color: '#15803D' }}>
+              <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #BBF7D0', fontSize: '0.82rem', fontWeight: 700, color: '#15803D' }}>
                 &bull; Primary Actor: Senior Citizen Direct
               </div>
             </div>
@@ -610,7 +694,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               backgroundColor: '#FEF3C7',
               border: '2px solid #D97706',
               borderRadius: '16px',
-              padding: '24px',
+              padding: '26px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -619,8 +703,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <span style={{
-                    width: '36px',
-                    height: '36px',
+                    width: '38px',
+                    height: '38px',
                     borderRadius: '50%',
                     backgroundColor: '#D97706',
                     color: '#FFFFFF',
@@ -628,7 +712,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 800,
-                    fontSize: '0.95rem'
+                    fontSize: '1rem'
                   }}>
                     02
                   </span>
@@ -636,15 +720,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     +15 Min Grace Expired
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#78350F', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#78350F', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <AlertTriangle size={20} color="#D97706" />
                   <span>Primary Caretaker Alert</span>
                 </h3>
-                <p style={{ fontSize: '0.92rem', color: '#92400E', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '0.93rem', color: '#92400E', lineHeight: 1.55 }}>
                   High-priority email notification dispatched to designated primary caregiver with instant phone check-in prompt.
                 </p>
               </div>
-              <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #FCD34D', fontSize: '0.8rem', fontWeight: 700, color: '#92400E' }}>
+              <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #FCD34D', fontSize: '0.82rem', fontWeight: 700, color: '#92400E' }}>
                 &bull; Idempotent: 1 alert per missed window
               </div>
             </div>
@@ -654,7 +738,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               backgroundColor: '#FEE2E2',
               border: '2px solid #DC2626',
               borderRadius: '16px',
-              padding: '24px',
+              padding: '26px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -663,8 +747,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <span style={{
-                    width: '36px',
-                    height: '36px',
+                    width: '38px',
+                    height: '38px',
                     borderRadius: '50%',
                     backgroundColor: '#DC2626',
                     color: '#FFFFFF',
@@ -672,7 +756,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 800,
-                    fontSize: '0.95rem'
+                    fontSize: '1rem'
                   }}>
                     03
                   </span>
@@ -680,15 +764,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                     +30 Min Critical Alert
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#7F1D1D', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#7F1D1D', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <PhoneCall size={20} color="#DC2626" />
                   <span>Extended Family Circle</span>
                 </h3>
-                <p style={{ fontSize: '0.92rem', color: '#991B1B', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '0.93rem', color: '#991B1B', lineHeight: 1.55 }}>
                   Full emergency escalation to all linked family members, emergency contacts, and recorded clinical providers.
                 </p>
               </div>
-              <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #FCA5A5', fontSize: '0.8rem', fontWeight: 700, color: '#991B1B' }}>
+              <div style={{ marginTop: '20px', paddingTop: '12px', borderTop: '1px solid #FCA5A5', fontSize: '0.82rem', fontWeight: 700, color: '#991B1B' }}>
                 &bull; Full Audit Log: Recorded immutably
               </div>
             </div>
@@ -696,16 +780,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         </div>
       </section>
 
-      {/* Footer - Palette-Themed #009F6B Background (Same as Header) */}
+      {/* Footer - Deep Ocean Navy (#184e77) Background (Matches Header) */}
       <footer style={{
         marginTop: 'auto',
-        backgroundColor: '#009F6B',
-        borderTop: '4px solid #9BE5AA',
-        padding: '36px 40px',
+        backgroundColor: 'var(--c-deep-ocean)',
+        borderTop: '4px solid #00AC73',
+        padding: '38px 56px',
         color: '#FFFFFF'
       }}>
         <div style={{
-          maxWidth: '1180px',
+          maxWidth: '1240px',
           margin: '0 auto',
           display: 'flex',
           justifyContent: 'space-between',
@@ -713,17 +797,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           flexWrap: 'wrap',
           gap: '20px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <img
               src="/logo.png"
               alt="SehatSathi Logo"
-              style={{ width: '44px', height: '44px', objectFit: 'contain' }}
+              style={{ width: '48px', height: '48px', objectFit: 'contain' }}
             />
             <div>
-              <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#FFFFFF', display: 'block', lineHeight: 1.1 }}>
+              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#FFFFFF', display: 'block', lineHeight: 1.1 }}>
                 SehatSathi
               </span>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9BE5AA' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#9BE5AA' }}>
                 Dignified Senior Care &bull; Prompt Wars X Catalyst 2026
               </span>
             </div>
@@ -731,7 +815,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => setShowKnowMoreModal(true)}
+              onClick={() => setShowPrivacyModal(true)}
               style={{
                 fontSize: '0.92rem',
                 fontWeight: 700,
@@ -740,7 +824,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 cursor: 'pointer'
               }}
             >
-              Architecture & Security
+              Safety & Privacy
             </button>
             <button
               onClick={() => setModalRole('ELDER')}
@@ -768,15 +852,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         </div>
       </footer>
 
-      {/* Know More / Architecture & Security Modal */}
-      {showKnowMoreModal && (
+      {/* Safety & Privacy Specification Modal (Strictly Patient Safety & Privacy - Zero Technical Jargon) */}
+      {showPrivacyModal && (
         <div style={{
           position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 77, 52, 0.6)',
+          backgroundColor: 'rgba(24, 78, 119, 0.65)',
           backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
@@ -786,35 +870,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
         }}>
           <div style={{
             backgroundColor: '#FFFFFF',
-            borderRadius: '18px',
-            maxWidth: '680px',
+            borderRadius: '20px',
+            maxWidth: '640px',
             width: '100%',
-            padding: '34px',
+            padding: '36px',
             maxHeight: '90vh',
             overflowY: 'auto',
             border: '2px solid #00AC73',
-            boxShadow: '0 25px 50px -12px rgba(0, 159, 107, 0.35)'
+            boxShadow: '0 25px 50px -12px rgba(24, 78, 119, 0.35)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '22px' }}>
               <div>
                 <span style={{
                   fontSize: '0.78rem',
                   fontWeight: 800,
                   padding: '4px 12px',
                   borderRadius: '12px',
-                  backgroundColor: '#DCFCE7',
+                  backgroundColor: '#E8F8EE',
                   color: '#009F6B',
                   display: 'inline-block',
-                  marginBottom: '8px'
+                  marginBottom: '8px',
+                  border: '1px solid #9BE5AA'
                 }}>
-                  SECURITY & ARCHITECTURE SPECIFICATION
+                  PATIENT PROTECTION & PRIVACY GUARANTEE
                 </span>
                 <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: 0 }}>
-                  Know More About SehatSathi
+                  Safety & Privacy First
                 </h2>
               </div>
               <button
-                onClick={() => setShowKnowMoreModal(false)}
+                onClick={() => setShowPrivacyModal(false)}
                 style={{ padding: '6px', color: 'var(--text-muted)', cursor: 'pointer' }}
                 aria-label="Close dialog"
               >
@@ -822,46 +907,56 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* Security Safeguards */}
-              <div style={{ backgroundColor: '#F8FAFC', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#009F6B', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <ShieldCheck size={20} />
-                  <span>Production-Grade Security Safeguards</span>
-                </h3>
-                <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.92rem', color: 'var(--text-main)', lineHeight: 1.6 }}>
-                  <li><strong>Bcrypt Password & PIN Hashing:</strong> Elder 4-digit PINs and caregiver credentials hashed with 10 salt rounds; no plaintext stored.</li>
-                  <li><strong>Time-Bound 5-Minute OTPs:</strong> Single-use cryptographic verification codes strictly expire after 5 minutes.</li>
-                  <li><strong>60-Second Cooldown & Rate Limiting:</strong> Enforces 60-second cooldown on OTP re-dispatches and limits failed attempts.</li>
-                  <li><strong>Account Lockout:</strong> Automatically freezes authentication for 15 minutes after 5 consecutive failed login attempts.</li>
-                  <li><strong>Tamper-Evident Audit Logs:</strong> Immutable timestamped logging of every dose confirmation, reschedule, and alert dispatch.</li>
-                </ul>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <KeyRound size={22} color="#00AC73" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: '0 0 4px 0' }}>Elder-Controlled Caregiver Access</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>Seniors generate a private Patient Link Code. Caregivers cannot access without explicit permission, and seniors can revoke access anytime with one tap.</p>
+                </div>
               </div>
 
-              {/* Technology Stack */}
-              <div style={{ backgroundColor: '#F0FDF4', padding: '20px', borderRadius: '12px', border: '1px solid #BBF7D0' }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#004D34', marginBottom: '10px' }}>
-                  Underlying Tech Stack & Services
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px', fontSize: '0.88rem', color: 'var(--text-main)' }}>
-                  <div><strong>Frontend:</strong> React 18, TypeScript, Vite, Plus Jakarta Sans</div>
-                  <div><strong>Backend:</strong> Node.js, Express 5, Prisma ORM</div>
-                  <div><strong>Database:</strong> Neon Serverless PostgreSQL</div>
-                  <div><strong>AI Engine:</strong> Google Gemini 2.0 (gemini-flash-lite)</div>
-                  <div><strong>Email Delivery:</strong> Nodemailer Gmail SMTP + Resend API</div>
-                  <div><strong>Architecture:</strong> Fully Idempotent Deterministic Cron</div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <Lock size={22} color="#168aad" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: '0 0 4px 0' }}>100% Cryptographic Credential Hashing</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>Senior PINs and caregiver passwords are encrypted with 10 salt rounds of Bcrypt. Raw PINs or passwords are never visible or stored in plaintext.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <Clock size={22} color="#00AC73" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: '0 0 4px 0' }}>Strict 5-Minute Single-Use Verification Codes</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>All email authentication codes automatically expire after 5 minutes and are destroyed immediately upon single verification to eliminate code replay.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <ShieldCheck size={22} color="#D97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: '0 0 4px 0' }}>60-Second Cooldown & 15-Minute Brute-Force Lockout</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>60-second cooldown timer prevents email spamming, and automatic 15-minute account lockouts trigger after 5 consecutive failed attempts.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                <Eye size={22} color="#168aad" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: '0 0 4px 0' }}>Tamper-Evident Medical Audit Trail</h4>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>Every dose marked taken, doctor appointment scheduled, or safety alert dispatched is immutably logged with an authentic timestamp and actor identity.</p>
                 </div>
               </div>
             </div>
 
             <button
-              onClick={() => setShowKnowMoreModal(false)}
+              onClick={() => setShowPrivacyModal(false)}
               style={{
-                marginTop: '24px',
+                marginTop: '26px',
                 width: '100%',
                 padding: '14px 0',
                 borderRadius: '10px',
-                backgroundColor: '#009F6B',
+                backgroundColor: 'var(--c-deep-ocean)',
                 color: '#FFFFFF',
                 fontWeight: 800,
                 fontSize: '1rem',
@@ -883,7 +978,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 77, 52, 0.55)',
+          backgroundColor: 'rgba(24, 78, 119, 0.55)',
           backdropFilter: 'blur(3px)',
           display: 'flex',
           alignItems: 'center',
@@ -921,7 +1016,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
               </div>
               <button
                 onClick={() => setActiveFeatureModal(null)}
-                style={{ padding: '6px', color: 'var(--text-muted)' }}
+                style={{ padding: '6px', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
                 <X size={20} />
               </button>
@@ -930,7 +1025,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
               {activeFeatureModal.fullDesc.map((point, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <CheckCircle2 size={18} color="#009F6B" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={18} color="#00AC73" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', lineHeight: 1.5, margin: 0 }}>
                     {point}
                   </p>
@@ -945,10 +1040,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess, defaul
                 width: '100%',
                 padding: '12px 0',
                 borderRadius: '8px',
-                backgroundColor: '#009F6B',
+                backgroundColor: 'var(--c-deep-ocean)',
                 color: '#FFFFFF',
                 fontWeight: 800,
-                fontSize: '0.95rem'
+                fontSize: '0.95rem',
+                cursor: 'pointer'
               }}
             >
               Close

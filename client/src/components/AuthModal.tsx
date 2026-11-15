@@ -517,17 +517,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                   onClick={() => handleSendOtp('REGISTER')}
                   disabled={otpLoading || cooldown > 0}
                   style={{
-                    padding: '10px 16px',
+                    padding: '10px 18px',
                     borderRadius: '8px',
-                    backgroundColor: cooldown > 0 ? '#E2E8F0' : 'var(--c-teal-green)',
-                    color: cooldown > 0 ? '#64748B' : '#FFFFFF',
+                    backgroundColor: cooldown > 0 ? '#E2E8F0' : otpLoading ? '#CBD5E1' : '#00AC73',
+                    color: cooldown > 0 ? '#475569' : '#FFFFFF',
+                    border: cooldown > 0 ? '1px solid #CBD5E1' : 'none',
                     fontSize: '0.85rem',
-                    fontWeight: 700,
+                    fontWeight: 800,
                     whiteSpace: 'nowrap',
-                    cursor: cooldown > 0 ? 'not-allowed' : 'pointer'
+                    cursor: cooldown > 0 || otpLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    minWidth: '135px',
+                    textAlign: 'center'
                   }}
                 >
-                  {otpLoading ? 'Sending...' : cooldown > 0 ? `Resend (${cooldown}s)` : otpSent ? 'Resend Code' : 'Send Code'}
+                  {otpLoading ? 'Sending...' : cooldown > 0 ? `Resend in ${cooldown}s` : otpSent ? 'Resend Code' : 'Send Code'}
                 </button>
               </div>
             </div>
@@ -644,16 +648,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
                   onClick={() => handleSendOtp('RESET_CREDENTIAL')}
                   disabled={otpLoading || cooldown > 0}
                   style={{
-                    padding: '10px 16px',
+                    padding: '10px 18px',
                     borderRadius: '8px',
-                    backgroundColor: cooldown > 0 ? '#E2E8F0' : 'var(--c-teal-green)',
-                    color: cooldown > 0 ? '#64748B' : '#FFFFFF',
+                    backgroundColor: cooldown > 0 ? '#E2E8F0' : otpLoading ? '#CBD5E1' : '#00AC73',
+                    color: cooldown > 0 ? '#475569' : '#FFFFFF',
+                    border: cooldown > 0 ? '1px solid #CBD5E1' : 'none',
                     fontSize: '0.85rem',
-                    fontWeight: 700,
-                    whiteSpace: 'nowrap'
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                    cursor: cooldown > 0 || otpLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    minWidth: '135px',
+                    textAlign: 'center'
                   }}
                 >
-                  {otpLoading ? 'Sending...' : cooldown > 0 ? `Resend (${cooldown}s)` : 'Send Code'}
+                  {otpLoading ? 'Sending...' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Send Code'}
                 </button>
               </div>
             </div>

@@ -117,19 +117,17 @@ async function sendEmailNotification({ to, subject, htmlText, plainText }) {
 
 function getEmailBrandedHeader() {
   return `
-    <div style="border-bottom: 2px solid #009F6B; padding-bottom: 14px; margin-bottom: 20px;">
-      <table cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
-        <tr>
-          <td style="width: 50px; vertical-align: middle;">
-            <img src="cid:sehatsathi-logo" alt="SehatSathi Logo" width="46" height="46" style="display: block; border-radius: 8px;" />
-          </td>
-          <td style="vertical-align: middle; padding-left: 12px;">
-            <span style="font-size: 22px; font-weight: 800; color: #009F6B; display: block; line-height: 1.1;">SehatSathi</span>
-            <span style="font-size: 11px; font-weight: 800; color: #00AC73; letter-spacing: 0.6px;">DIGNIFIED SENIOR CARE</span>
-          </td>
-        </tr>
-      </table>
-    </div>
+    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 16px;">
+      <tr>
+        <td style="vertical-align: middle; padding-right: 12px;">
+          <img src="cid:sehatsathi-logo" alt="SehatSathi" width="40" height="40" style="display: block; border-radius: 6px;" />
+        </td>
+        <td style="vertical-align: middle;">
+          <span style="font-size: 24px; font-weight: 800; color: #184e77; letter-spacing: -0.5px;">SehatSathi</span>
+        </td>
+      </tr>
+    </table>
+    <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 0 0 24px 0;" />
   `;
 }
 

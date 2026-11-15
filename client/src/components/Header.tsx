@@ -10,29 +10,29 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   return (
     <header style={{
-      backgroundColor: '#009F6B',
-      borderBottom: '4px solid #9BE5AA',
-      padding: '20px 44px',
+      backgroundColor: '#184e77',
+      borderBottom: '4px solid #00AC73',
+      padding: '20px 48px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      boxShadow: '0 8px 24px rgba(0, 159, 107, 0.25)'
+      boxShadow: '0 8px 24px rgba(24, 78, 119, 0.25)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
         <img
           src="/logo.png"
           alt="SehatSathi Care Logo"
           className="animate-logo-entrance logo-pulse"
-          style={{ width: '54px', height: '54px', objectFit: 'contain', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))' }}
+          style={{ width: '64px', height: '64px', objectFit: 'contain', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.25))' }}
         />
         <div className="animate-title-slide">
-          <span style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', display: 'block', lineHeight: 1.1 }}>
+          <span style={{ fontSize: '1.9rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', display: 'block', lineHeight: 1.1 }}>
             SehatSathi
           </span>
-          <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#9BE5AA', letterSpacing: '1px' }}>
+          <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#9BE5AA', letterSpacing: '1.2px' }}>
             DIGNIFIED SENIOR CARE
           </span>
         </div>
