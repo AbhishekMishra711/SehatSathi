@@ -27,3 +27,4 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
 
   return data;
 }
+

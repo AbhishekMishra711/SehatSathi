@@ -1,4 +1,4 @@
-export type Role = 'ELDER' | 'CARETAKER' | 'FAMILY';
+export type Role = 'ELDER' | 'CARETAKER' | 'FAMILY' | 'ADMIN';
 
 export interface User {
   id: string;
@@ -7,6 +7,7 @@ export interface User {
   phone?: string;
   role: Role;
   elderProfileId?: string | null;
+  linkCode?: string | null;
 }
 
 export interface Medication {
@@ -56,6 +57,13 @@ export interface CaregiverLink {
   };
 }
 
+export interface AssistantChatMessage {
+  id: string;
+  sender: 'USER' | 'ASSISTANT';
+  message: string;
+  createdAt: string;
+}
+
 export interface AuditLog {
   id: string;
   action: string;
@@ -65,5 +73,22 @@ export interface AuditLog {
     id: string;
     name: string;
     role: Role;
+    email?: string;
   };
+  elderProfile?: {
+    user: {
+      name: string;
+    };
+  };
+}
+
+export interface AdminMetrics {
+  totalUsers: number;
+  totalElders: number;
+  totalCaregivers: number;
+  totalMeds: number;
+  totalDoses: number;
+  takenDoses: number;
+  missedDoses: number;
+  adherenceRate: number;
 }

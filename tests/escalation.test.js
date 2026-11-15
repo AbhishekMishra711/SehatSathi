@@ -78,3 +78,4 @@ describe('Escalation Logic Unit Tests', () => {
     expect(evaluateDoseEscalation(dose, graceMinutes, now)).toBe('NONE');
   });
 });
+

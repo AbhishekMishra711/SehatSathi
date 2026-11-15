@@ -1,329 +1,460 @@
 import React, { useState } from 'react';
-import { apiRequest } from '../services/api';
-import { User, Role } from '../types';
-import { Shield, Clock, Bell, UserCheck, AlertCircle } from 'lucide-react';
+import { User } from '../types';
+import { AuthModal } from './AuthModal';
+import { 
+  HeartHandshake, 
+  ShieldCheck, 
+  Clock, 
+  Sparkles, 
+  PhoneCall, 
+  Users, 
+  CheckCircle2, 
+  MessageSquare,
+  ArrowRight,
+  Lock
+} from 'lucide-react';
 
 interface LandingPageProps {
   onLoginSuccess: (user: User, token: string) => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState('');
-  const [credential, setCredential] = useState('');
-  const [isElderMode, setIsElderMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleManualLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const payload = isElderMode
-        ? { email, pin: credential }
-        : { email, password: credential };
-
-      const res = await apiRequest<{ success: boolean; token: string; user: User }>('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-
-      if (res.success) {
-        localStorage.setItem('sehatsathi_token', res.token);
-        onLoginSuccess(res.user, res.token);
-      }
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickDemo = async (role: Role) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await apiRequest<{ success: boolean; token: string; user: User }>('/api/auth/quick-demo-login', {
-        method: 'POST',
-        body: JSON.stringify({ role })
-      });
-
-      if (res.success) {
-        localStorage.setItem('sehatsathi_token', res.token);
-        onLoginSuccess(res.user, res.token);
-      }
-    } catch (err: any) {
-      setError(err.message || 'Demo login failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [modalRole, setModalRole] = useState<'ELDER' | 'CARETAKER' | 'ADMIN' | null>(null);
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 20px' }}>
-      {/* Intro hero for judges and users */}
-      <div style={{
-        backgroundColor: 'var(--bg-surface)',
-        border: '1px solid var(--border-color)',
-        borderRadius: '12px',
-        padding: '36px 32px',
-        marginBottom: '32px'
+    <div>
+      {/* Top Banner Navigation */}
+      <nav style={{
+        backgroundColor: '#FFFFFF',
+        borderBottom: '1px solid var(--border-color)',
+        padding: '16px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100
       }}>
-        <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: '16px', backgroundColor: 'var(--primary-teal-light)', color: 'var(--primary-teal)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '14px' }}>
-          Elderly Care & Medication Management Platform
-        </div>
-        <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '12px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
-          Dignified medication management, with the senior at the center.
-        </h1>
-        <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', maxWidth: '780px', lineHeight: 1.6 }}>
-          SehatSathi provides seniors with an accessible phone-first interface, 
-          backed by an intelligent multi-tier escalation chain, elder-controlled access permissions, 
-          and safe AI-assisted prescription scheduling.
-        </p>
-
-        {/* Feature pillars */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginTop: '28px' }}>
-          <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)' }}>
-            <Clock size={22} color="var(--primary-teal)" style={{ marginBottom: '8px' }} />
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Automated Escalation</h3>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-              Reminds elder first. If missed past grace window, escalates to caretaker, then family.
-            </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '8px',
+            backgroundColor: 'var(--c-deep-ocean)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF'
+          }}>
+            <HeartHandshake size={22} />
           </div>
-
-          <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)' }}>
-            <UserCheck size={22} color="var(--primary-teal)" style={{ marginBottom: '8px' }} />
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Elder in Control</h3>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-              Seniors decide what family members can edit or view, with full revocation power.
-            </p>
-          </div>
-
-          <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-primary)' }}>
-            <Shield size={22} color="var(--primary-teal)" style={{ marginBottom: '8px' }} />
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Audited & Safe</h3>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-              Every dose, schedule change, and access grant is recorded in a tamper-evident audit log.
-            </p>
-          </div>
+          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em' }}>
+            SehatSathi
+          </span>
         </div>
-      </div>
 
-      {/* Quick Demo Access Bar (Highlighted for hackathon evaluation) */}
-      <div style={{
-        backgroundColor: '#F8FAFC',
-        border: '2px solid var(--primary-teal)',
-        borderRadius: '12px',
-        padding: '28px',
-        marginBottom: '32px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <Bell size={20} color="var(--primary-teal)" />
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>
-            Judge & Demo Evaluation Access
-          </h2>
-        </div>
-        <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-          Explore pre-seeded test accounts with one click to test the mobile senior interface and caretaker dashboard:
-        </p>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+        {/* Action Buttons: Patient and Caretaker */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
-            onClick={() => handleQuickDemo('ELDER')}
-            disabled={isLoading}
+            onClick={() => setModalRole('ELDER')}
             style={{
-              padding: '16px 20px',
+              padding: '10px 18px',
               borderRadius: '8px',
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--border-strong)',
-              textAlign: 'left',
-              transition: 'border-color 0.2s',
-              cursor: 'pointer'
+              border: '2px solid var(--c-ocean-teal)',
+              backgroundColor: '#FFFFFF',
+              color: 'var(--c-deep-ocean)',
+              fontWeight: 700,
+              fontSize: '0.92rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}
           >
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary-teal)', marginBottom: '4px' }}>
-              Sign in as Senior
-            </div>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-main)', fontWeight: 600 }}>Ramesh Sharma (Age 72)</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              4-digit PIN login, high-contrast PWA view, voice audio readout.
-            </div>
+            <span>Patient</span>
           </button>
 
           <button
-            onClick={() => handleQuickDemo('CARETAKER')}
-            disabled={isLoading}
+            onClick={() => setModalRole('CARETAKER')}
             style={{
-              padding: '16px 20px',
+              padding: '10px 20px',
               borderRadius: '8px',
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--border-strong)',
-              textAlign: 'left',
-              transition: 'border-color 0.2s',
-              cursor: 'pointer'
+              backgroundColor: 'var(--c-deep-ocean)',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              fontSize: '0.92rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}
           >
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary-teal)', marginBottom: '4px' }}>
-              Sign in as Caretaker
-            </div>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-main)', fontWeight: 600 }}>Aarav Sharma (Son)</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Full dashboard, Gemini prescription parser, escalation simulator.
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleQuickDemo('FAMILY')}
-            disabled={isLoading}
-            style={{
-              padding: '16px 20px',
-              borderRadius: '8px',
-              backgroundColor: 'var(--bg-surface)',
-              border: '1px solid var(--border-strong)',
-              textAlign: 'left',
-              transition: 'border-color 0.2s',
-              cursor: 'pointer'
-            }}
-          >
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary-teal)', marginBottom: '4px' }}>
-              Sign in as Family
-            </div>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-main)', fontWeight: 600 }}>Priya Sharma (Daughter)</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              View-only permissions demo, appointment manager, adherence logs.
-            </div>
+            <span>Caretaker / Family</span>
+            <ArrowRight size={16} />
           </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Manual sign in card */}
-      <div style={{
-        maxWidth: '460px',
+      {/* Hero Section */}
+      <section style={{
+        maxWidth: '1120px',
         margin: '0 auto',
-        backgroundColor: 'var(--bg-surface)',
-        border: '1px solid var(--border-color)',
-        borderRadius: '12px',
-        padding: '30px'
+        padding: '56px 20px 48px 20px',
+        textAlign: 'center'
       }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '16px', textAlign: 'center' }}>
-          Manual Account Login
-        </h2>
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 16px',
+          borderRadius: '20px',
+          backgroundColor: 'var(--c-lime)',
+          color: 'var(--c-deep-ocean)',
+          fontSize: '0.88rem',
+          fontWeight: 700,
+          marginBottom: '20px'
+        }}>
+          <ShieldCheck size={16} />
+          <span>Dignified Senior Healthcare & Medication Management</span>
+        </div>
 
-        {error && (
+        <h1 style={{
+          fontSize: '2.8rem',
+          fontWeight: 900,
+          color: 'var(--c-deep-ocean)',
+          letterSpacing: '-0.03em',
+          lineHeight: 1.2,
+          maxWidth: '850px',
+          margin: '0 auto 20px auto'
+        }}>
+          Caring for our elders, with them at the center of every decision.
+        </h1>
+
+        <p style={{
+          fontSize: '1.2rem',
+          color: 'var(--text-muted)',
+          maxWidth: '720px',
+          margin: '0 auto 36px auto',
+          lineHeight: 1.6
+        }}>
+          A dedicated senior-first platform that connects elderly individuals with their caretakers and families. 
+          Features high-contrast one-touch confirmations, an AI voice companion, and an automated multi-tier escalation chain.
+        </p>
+
+        {/* Primary Action Row */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setModalRole('ELDER')}
+            style={{
+              padding: '16px 32px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--c-deep-ocean)',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '1.05rem',
+              boxShadow: '0 4px 12px rgba(24, 78, 119, 0.25)'
+            }}
+          >
+            Enter as Senior Patient
+          </button>
+
+          <button
+            onClick={() => setModalRole('CARETAKER')}
+            style={{
+              padding: '16px 32px',
+              borderRadius: '8px',
+              backgroundColor: '#FFFFFF',
+              border: '2px solid var(--c-deep-ocean)',
+              color: 'var(--c-deep-ocean)',
+              fontWeight: 800,
+              fontSize: '1.05rem'
+            }}
+          >
+            Enter as Caretaker or Family
+          </button>
+        </div>
+      </section>
+
+      {/* Feature Pillars Grid */}
+      <section style={{
+        maxWidth: '1120px',
+        margin: '0 auto',
+        padding: '20px 20px 60px 20px'
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '24px'
+        }}>
+          {/* Card 1: Senior First Mobile Experience */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '28px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--c-lime)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--c-deep-ocean)',
+              marginBottom: '16px'
+            }}>
+              <CheckCircle2 size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+              One-Touch Senior PWA
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Designed specifically for aging eyes and thumbs: 48px+ touch targets, simple 4-digit PIN access, 
+              large font sizes, and spoken audio dose instructions.
+            </p>
+          </div>
+
+          {/* Card 2: AI Voice & Health Companion */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '28px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--c-mint)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              marginBottom: '16px'
+            }}>
+              <MessageSquare size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+              AI Voice & Chat Companion
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Seniors can speak or type to their personal health companion. Strictly bounded to their actual prescribed medicines, 
+              doctor visits, and healthy daily routine.
+            </p>
+          </div>
+
+          {/* Card 3: Multi-Tier Escalation */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '28px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--c-ocean-teal)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              marginBottom: '16px'
+            }}>
+              <Clock size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+              Multi-Tier Escalation Chain
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              If a dose is missed past the grace window, the primary caregiver is alerted immediately via email. 
+              If still unconfirmed, extended family is notified to ensure elder safety.
+            </p>
+          </div>
+
+          {/* Card 4: Elder Controlled Permissions */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '28px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--c-teal-green)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              marginBottom: '16px'
+            }}>
+              <Users size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+              Elder-Controlled Permissions
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Seniors retain dignity and authority. They decide what each family member can view or edit, 
+              and can revoke access at any time with a single tap.
+            </p>
+          </div>
+
+          {/* Card 5: Safe Prescription AI */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '28px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--c-teal)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              marginBottom: '16px'
+            }}>
+              <Sparkles size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+              Safe Gemini Schedule Parser
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Caretakers can paste doctor notes into the parser. Gemini structures the frequency and slots, 
+              which must be verified by a human before saving.
+            </p>
+          </div>
+
+          {/* Card 6: Tamper-Evident Audit Trail */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '28px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              backgroundColor: 'var(--c-ocean-blue)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              marginBottom: '16px'
+            }}>
+              <Lock size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+              Complete Transparency
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              Every dose confirmed, medication added, or permission changed is logged with exact actor identity 
+              and timestamp in an immutable audit trail.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Escalation Workflow Diagram */}
+      <section style={{
+        maxWidth: '1120px',
+        margin: '0 auto',
+        padding: '0 20px 60px 20px'
+      }}>
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          border: '1px solid var(--border-color)',
+          borderRadius: '16px',
+          padding: '36px 32px',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '10px' }}>
+            How the Escalation Chain Operates
+          </h2>
+          <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', maxWidth: '650px', margin: '0 auto 32px auto' }}>
+            A deterministic, time-tested safety net that guarantees no senior's medication goes forgotten unnoticed.
+          </p>
+
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            backgroundColor: 'var(--status-missed-bg)',
-            color: 'var(--status-missed)',
-            padding: '10px 14px',
-            borderRadius: '6px',
-            fontSize: '0.88rem',
-            marginBottom: '16px'
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
           }}>
-            <AlertCircle size={16} />
-            <span>{error}</span>
-          </div>
-        )}
+            <div style={{ padding: '16px 20px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', border: '1px solid var(--c-ocean-blue)', minWidth: '200px' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--c-deep-ocean)' }}>STAGE 1</div>
+              <div style={{ fontSize: '1rem', fontWeight: 800, marginTop: '4px' }}>Senior Dose Due</div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Email reminder dispatched</div>
+            </div>
 
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', marginBottom: '20px' }}>
+            <ArrowRight size={20} color="var(--c-ocean-teal)" />
+
+            <div style={{ padding: '16px 20px', borderRadius: '8px', backgroundColor: '#FEF3C7', border: '1px solid #D97706', minWidth: '200px' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#B45309' }}>STAGE 2 (+15 Min)</div>
+              <div style={{ fontSize: '1rem', fontWeight: 800, marginTop: '4px' }}>Grace Period Passed</div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Primary Caretaker alerted</div>
+            </div>
+
+            <ArrowRight size={20} color="var(--c-ocean-teal)" />
+
+            <div style={{ padding: '16px 20px', borderRadius: '8px', backgroundColor: '#FEE2E2', border: '1px solid #DC2626', minWidth: '200px' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#991B1B' }}>STAGE 3 (+30 Min)</div>
+              <div style={{ fontSize: '1rem', fontWeight: 800, marginTop: '4px' }}>Extended Escalation</div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Family Circle notified</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer with Admin portal link */}
+      <footer style={{
+        backgroundColor: '#FFFFFF',
+        borderTop: '1px solid var(--border-color)',
+        padding: '24px 20px',
+        textAlign: 'center',
+        fontSize: '0.88rem',
+        color: 'var(--text-muted)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '8px' }}>
+          <span>SehatSathi Platform &bull; Prompt Wars X Catalyst 2026</span>
           <button
-            type="button"
-            onClick={() => { setIsElderMode(true); setCredential(''); }}
+            onClick={() => setModalRole('ADMIN')}
             style={{
-              flex: 1,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              color: isElderMode ? 'var(--primary-teal)' : 'var(--text-muted)',
-              borderBottom: isElderMode ? '2px solid var(--primary-teal)' : 'none'
+              color: 'var(--c-ocean-blue)',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              textDecoration: 'underline'
             }}
           >
-            Senior (PIN)
-          </button>
-          <button
-            type="button"
-            onClick={() => { setIsElderMode(false); setCredential(''); }}
-            style={{
-              flex: 1,
-              padding: '10px 0',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              color: !isElderMode ? 'var(--primary-teal)' : 'var(--text-muted)',
-              borderBottom: !isElderMode ? '2px solid var(--primary-teal)' : 'none'
-            }}
-          >
-            Caretaker / Family
+            Admin Portal Access
           </button>
         </div>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-light)', margin: 0 }}>
+          Protected by Argon2/Bcrypt hashing, verified email OTPs, and rate limiting.
+        </p>
+      </footer>
 
-        <form onSubmit={handleManualLogin}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '6px' }}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={isElderMode ? "ramesh@sehatsathi.demo" : "aarav@sehatsathi.demo"}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                borderRadius: '6px',
-                border: '1px solid var(--border-strong)',
-                fontSize: '0.95rem'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '6px' }}>
-              {isElderMode ? '4-Digit Senior PIN' : 'Account Password'}
-            </label>
-            <input
-              type={isElderMode ? "password" : "password"}
-              maxLength={isElderMode ? 6 : 50}
-              required
-              value={credential}
-              onChange={(e) => setCredential(e.target.value)}
-              placeholder={isElderMode ? "1234" : "Password123!"}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                borderRadius: '6px',
-                border: '1px solid var(--border-strong)',
-                fontSize: '0.95rem'
-              }}
-            />
-            {isElderMode && (
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
-                Account lockout automatically engages after 5 failed attempts.
-              </span>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '12px 0',
-              borderRadius: '6px',
-              backgroundColor: 'var(--primary-teal)',
-              color: '#FFFFFF',
-              fontWeight: 600,
-              fontSize: '1rem',
-              cursor: isLoading ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-      </div>
+      {/* Auth Modal */}
+      {modalRole && (
+        <AuthModal
+          initialRole={modalRole}
+          isOpen={true}
+          onClose={() => setModalRole(null)}
+          onSuccess={onLoginSuccess}
+        />
+      )}
     </div>
   );
 };

@@ -26,6 +26,70 @@ async function getAuthorizedLink(userId, elderProfileId) {
   return link;
 }
 
+async function linkPatientWithCode(req, res, next) {
+  try {
+    const schema = z.object({
+      linkCode: z.string().min(4),
+      relationship: z.string().min(2)
+    });
+    const { linkCode, relationship } = schema.parse(req.body);
+
+    const elderProfile = await prisma.elderProfile.findUnique({
+      where: { linkCode: linkCode.toUpperCase().trim() },
+      include: { user: true }
+    });
+
+    if (!elderProfile) {
+      return res.status(404).json({ success: false, error: 'Patient Link Code not found' });
+    }
+
+    const existingLink = await prisma.caregiverLink.findUnique({
+      where: {
+        elderProfileId_caregiverId: {
+          elderProfileId: elderProfile.id,
+          caregiverId: req.user.id
+        }
+      }
+    });
+
+    if (existingLink) {
+      if (existingLink.status === 'REVOKED') {
+        return res.status(403).json({ success: false, error: 'The patient has revoked access for your account' });
+      }
+      return res.json({ success: true, message: 'Already connected to this patient', elderProfileId: elderProfile.id });
+    }
+
+    await prisma.caregiverLink.create({
+      data: {
+        elderProfileId: elderProfile.id,
+        caregiverId: req.user.id,
+        relationship,
+        canEditMeds: req.user.role === 'CARETAKER',
+        canEditAppointments: true,
+        canViewLogs: true,
+        status: 'ACTIVE'
+      }
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        elderProfileId: elderProfile.id,
+        performedById: req.user.id,
+        action: 'CAREGIVER_CONNECTED',
+        details: `${req.user.name} connected as ${relationship} via Patient Link Code`
+      }
+    });
+
+    res.json({
+      success: true,
+      message: `Connected successfully to ${elderProfile.user.name}`,
+      elderProfileId: elderProfile.id
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getElderOverview(req, res, next) {
   try {
     const { elderProfileId } = req.params;
@@ -276,7 +340,6 @@ async function simulateEscalation(req, res, next) {
     const { elderProfileId } = req.params;
     const link = await getAuthorizedLink(req.user.id, elderProfileId);
 
-    // Fast-forward simulation: find or create a pending dose scheduled 20 minutes ago
     const simulatedScheduledTime = new Date(Date.now() - 20 * 60 * 1000);
 
     let dose = await prisma.doseSchedule.findFirst({
@@ -290,7 +353,7 @@ async function simulateEscalation(req, res, next) {
     if (!dose) {
       const anyMed = await prisma.medication.findFirst({ where: { elderProfileId } });
       if (!anyMed) {
-        return res.status(400).json({ success: false, error: 'No medications exist for this profile' });
+        return res.status(400).json({ success: false, error: 'No medications exist for this profile yet. Add a medication first.' });
       }
       dose = await prisma.doseSchedule.create({
         data: {
@@ -314,7 +377,6 @@ async function simulateEscalation(req, res, next) {
       });
     }
 
-    // Run escalation processor with reference time = now
     const summary = await escalation.processEscalationTick(new Date());
 
     res.json({
@@ -333,6 +395,7 @@ async function simulateEscalation(req, res, next) {
 }
 
 module.exports = {
+  linkPatientWithCode,
   getElderOverview,
   getMedications,
   addMedication,

@@ -1,5 +1,6 @@
 const { z } = require('zod');
 const prisma = require('../db/prisma');
+const { handleElderAssistantQuery } = require('../services/elderAiAssistant');
 
 async function getElderProfileFromUser(userId) {
   const profile = await prisma.elderProfile.findUnique({
@@ -32,7 +33,6 @@ async function getTodaySchedule(req, res, next) {
       orderBy: { scheduledFor: 'asc' }
     });
 
-    // Find the primary focus dose: first PENDING dose or MISSED dose
     const nextDueDose = doses.find(d => d.status === 'PENDING') || doses.find(d => d.status === 'MISSED') || null;
 
     res.json({
@@ -40,6 +40,7 @@ async function getTodaySchedule(req, res, next) {
       data: {
         elderName: profile.user.name,
         emergencyPhone: profile.emergencyPhone,
+        linkCode: profile.linkCode,
         nextDueDose,
         allDosesToday: doses,
         summary: {
@@ -142,6 +143,7 @@ async function getMyPeople(req, res, next) {
 
     res.json({
       success: true,
+      linkCode: profile.linkCode,
       caregivers
     });
   } catch (err) {
@@ -238,11 +240,50 @@ async function revokeCaregiverAccess(req, res, next) {
   }
 }
 
+// Patient AI Voice/Chat Assistant query
+async function chatWithAssistant(req, res, next) {
+  try {
+    const schema = z.object({
+      message: z.string().min(1)
+    });
+    const { message } = schema.parse(req.body);
+    const profile = await getElderProfileFromUser(req.user.id);
+
+    const result = await handleElderAssistantQuery(profile.id, message);
+    res.json({
+      success: true,
+      reply: result.reply
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getAssistantHistory(req, res, next) {
+  try {
+    const profile = await getElderProfileFromUser(req.user.id);
+    const history = await prisma.assistantChat.findMany({
+      where: { elderProfileId: profile.id },
+      orderBy: { createdAt: 'asc' },
+      take: 30
+    });
+
+    res.json({
+      success: true,
+      history
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getTodaySchedule,
   confirmDose,
   getAppointments,
   getMyPeople,
   updateCaregiverPermission,
-  revokeCaregiverAccess
+  revokeCaregiverAccess,
+  chatWithAssistant,
+  getAssistantHistory
 };

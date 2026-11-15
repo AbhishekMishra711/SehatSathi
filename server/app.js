@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const elderRoutes = require('./routes/elderRoutes');
 const caretakerRoutes = require('./routes/caretakerRoutes');
 const cronRoutes = require('./routes/cronRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/elder', elderRoutes);
 app.use('/api/caretaker', caretakerRoutes);
 app.use('/api/cron', cronRoutes);
+app.use('/api/admin', adminRoutes);
 
 // In production, serve static files from client build
 if (config.nodeEnv === 'production') {
@@ -60,3 +62,4 @@ if (config.nodeEnv === 'production') {
 app.use(errorHandler);
 
 module.exports = app;
+

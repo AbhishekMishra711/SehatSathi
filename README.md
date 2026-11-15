@@ -111,3 +111,4 @@ Or pass via query parameter: `/api/cron/tick?secret=<CRON_SECRET>`
 - Senior PIN vs Passcode: Seniors frequently struggle with long, complex alphanumeric passwords. SehatSathi uses a 4-digit numeric PIN for senior logins, balanced by strict server-side rate limiting and an automated 15-minute account lockout after 5 consecutive failed attempts.
 - Relational Schema: Relational integrity (PostgreSQL via Prisma) was chosen because medication schedules, dose logs, and caregiver permission links are strictly relational and benefit from foreign key constraints.
 - Idempotent Escalation: The cron worker checks dose status and updates escalation level in atomic database transactions, preventing duplicate email dispatches if the worker triggers multiple times.
+

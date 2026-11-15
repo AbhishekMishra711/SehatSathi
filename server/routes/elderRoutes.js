@@ -13,4 +13,8 @@ router.get('/my-people', elderController.getMyPeople);
 router.put('/permissions', elderController.updateCaregiverPermission);
 router.put('/revoke-access', elderController.revokeCaregiverAccess);
 
+// Patient AI Voice/Chat Assistant routes
+router.post('/assistant/chat', elderController.chatWithAssistant);
+router.get('/assistant/history', elderController.getAssistantHistory);
+
 module.exports = router;

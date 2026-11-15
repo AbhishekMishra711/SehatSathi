@@ -6,6 +6,7 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 router.use(requireAuth);
 router.use(requireRole(['CARETAKER', 'FAMILY']));
 
+router.post('/link-patient', caretakerController.linkPatientWithCode);
 router.get('/overview/:elderProfileId', caretakerController.getElderOverview);
 router.get('/medications/:elderProfileId', caretakerController.getMedications);
 router.post('/medications/:elderProfileId', caretakerController.addMedication);

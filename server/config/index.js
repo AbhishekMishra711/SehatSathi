@@ -12,3 +12,4 @@ module.exports = {
   geminiModel: process.env.GEMINI_MODEL || 'gemini-flash-lite-latest',
   emailFrom: process.env.EMAIL_FROM || 'onboarding@resend.dev',
 };
+

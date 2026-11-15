@@ -2,17 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { apiRequest } from '../services/api';
 import { DoseSchedule, Appointment, CaregiverLink } from '../types';
 import { speakText } from '../services/speech';
-import { CheckCircle2, Volume2, PhoneCall, Calendar, Users, ShieldAlert, AlertTriangle, Clock } from 'lucide-react';
+import { ElderCompanion } from './ElderCompanion';
+import { 
+  CheckCircle2, 
+  Volume2, 
+  PhoneCall, 
+  Calendar, 
+  Users, 
+  Clock, 
+  MessageSquare,
+  Copy,
+  Check
+} from 'lucide-react';
 
 export const ElderView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'schedule' | 'appointments' | 'people'>('schedule');
+  const [activeTab, setActiveTab] = useState<'schedule' | 'companion' | 'appointments' | 'people'>('schedule');
   const [nextDose, setNextDose] = useState<DoseSchedule | null>(null);
   const [allDoses, setAllDoses] = useState<DoseSchedule[]>([]);
   const [emergencyPhone, setEmergencyPhone] = useState<string | null>(null);
+  const [linkCode, setLinkCode] = useState<string | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [caregivers, setCaregivers] = useState<CaregiverLink[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const loadSchedule = async () => {
     try {
@@ -22,6 +35,7 @@ export const ElderView: React.FC = () => {
           nextDueDose: DoseSchedule | null;
           allDosesToday: DoseSchedule[];
           emergencyPhone: string | null;
+          linkCode: string | null;
         };
       }>('/api/elder/today');
 
@@ -29,6 +43,7 @@ export const ElderView: React.FC = () => {
         setNextDose(res.data.nextDueDose);
         setAllDoses(res.data.allDosesToday);
         setEmergencyPhone(res.data.emergencyPhone);
+        setLinkCode(res.data.linkCode);
       }
     } catch (err) {
       console.error('Failed to load elder schedule', err);
@@ -48,9 +63,10 @@ export const ElderView: React.FC = () => {
 
   const loadCaregivers = async () => {
     try {
-      const res = await apiRequest<{ success: boolean; caregivers: CaregiverLink[] }>('/api/elder/my-people');
+      const res = await apiRequest<{ success: boolean; linkCode: string; caregivers: CaregiverLink[] }>('/api/elder/my-people');
       if (res.success && res.caregivers) {
         setCaregivers(res.caregivers);
+        if (res.linkCode) setLinkCode(res.linkCode);
       }
     } catch (err) {
       console.error('Failed to load caregivers', err);
@@ -119,32 +135,52 @@ export const ElderView: React.FC = () => {
     }
   };
 
+  const copyLinkCode = () => {
+    if (linkCode) {
+      navigator.clipboard.writeText(linkCode);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2500);
+    }
+  };
+
   if (isLoading) {
     return (
       <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center', padding: '20px' }}>
-        <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Loading your schedule...</p>
+        <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Loading your care portal...</p>
       </div>
     );
   }
 
   return (
     <div style={{ maxWidth: '640px', margin: '0 auto', padding: '16px' }}>
-      {/* Top Banner: Emergency Contact */}
-      {emergencyPhone && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          marginBottom: '16px'
-        }}>
-          <div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Emergency Contact</div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)' }}>{emergencyPhone}</div>
+      {/* Top Banner: Emergency Contact & Link Code */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid var(--border-color)',
+        marginBottom: '16px'
+      }}>
+        <div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Your Patient Link Code</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '1px' }}>
+              {linkCode || 'Loading...'}
+            </span>
+            <button
+              onClick={copyLinkCode}
+              style={{ padding: '4px', color: 'var(--c-ocean-teal)', cursor: 'pointer' }}
+              title="Copy code to share with family"
+            >
+              {copiedCode ? <Check size={16} /> : <Copy size={16} />}
+            </button>
           </div>
+        </div>
+
+        {emergencyPhone ? (
           <a
             href={`tel:${emergencyPhone}`}
             style={{
@@ -161,12 +197,12 @@ export const ElderView: React.FC = () => {
             }}
           >
             <PhoneCall size={18} />
-            <span>Call Now</span>
+            <span>Emergency</span>
           </a>
-        </div>
-      )}
+        ) : null}
+      </div>
 
-      {/* Confirmation notification alert */}
+      {/* Confirmation alert */}
       {actionMessage && (
         <div style={{
           padding: '14px 18px',
@@ -185,14 +221,15 @@ export const ElderView: React.FC = () => {
         </div>
       )}
 
-      {/* Primary Hero Card: NEXT DOSE */}
-      {nextDose ? (
+      {/* Primary Hero Card: NEXT DOSE (Only show on schedule tab) */}
+      {activeTab === 'schedule' && nextDose && (
         <div style={{
-          backgroundColor: 'var(--bg-surface)',
-          border: '2px solid var(--primary-teal)',
+          backgroundColor: '#FFFFFF',
+          border: '2px solid var(--c-deep-ocean)',
           borderRadius: '12px',
           padding: '24px 20px',
-          marginBottom: '24px'
+          marginBottom: '24px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{
@@ -215,8 +252,8 @@ export const ElderView: React.FC = () => {
                 padding: '8px 12px',
                 borderRadius: '6px',
                 border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-primary)',
-                color: 'var(--primary-teal)',
+                backgroundColor: 'var(--primary-light)',
+                color: 'var(--c-deep-ocean)',
                 fontSize: '0.9rem',
                 fontWeight: 600
               }}
@@ -227,11 +264,11 @@ export const ElderView: React.FC = () => {
             </button>
           </div>
 
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px' }}>
+          <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
             {nextDose.medication.name}
           </h2>
 
-          <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-teal)', marginBottom: '8px' }}>
+          <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--c-ocean-teal)', marginBottom: '8px' }}>
             {nextDose.medication.dosage} &bull; {new Date(nextDose.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
 
@@ -245,9 +282,9 @@ export const ElderView: React.FC = () => {
               width: '100%',
               padding: '16px 20px',
               borderRadius: '8px',
-              backgroundColor: 'var(--primary-teal)',
+              backgroundColor: 'var(--c-deep-ocean)',
               color: '#FFFFFF',
-              fontSize: '1.25rem',
+              fontSize: '1.3rem',
               fontWeight: 800,
               display: 'flex',
               alignItems: 'center',
@@ -259,19 +296,6 @@ export const ElderView: React.FC = () => {
             <CheckCircle2 size={26} />
             <span>I took it</span>
           </button>
-        </div>
-      ) : (
-        <div style={{
-          backgroundColor: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '12px',
-          padding: '24px',
-          marginBottom: '24px',
-          textAlign: 'center'
-        }}>
-          <CheckCircle2 size={40} color="var(--status-taken)" style={{ margin: '0 auto 12px auto' }} />
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '6px' }}>All doses complete for now</h2>
-          <p style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>You have no pending doses due right now.</p>
         </div>
       )}
 
@@ -288,16 +312,35 @@ export const ElderView: React.FC = () => {
             padding: '14px 0',
             fontSize: '1rem',
             fontWeight: 700,
-            color: activeTab === 'schedule' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'schedule' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'schedule' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'schedule' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px'
+            gap: '6px'
           }}
         >
           <Clock size={18} />
           <span>Today</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('companion')}
+          style={{
+            flex: 1,
+            padding: '14px 0',
+            fontSize: '1rem',
+            fontWeight: 700,
+            color: activeTab === 'companion' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'companion' ? '3px solid var(--c-deep-ocean)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px'
+          }}
+        >
+          <MessageSquare size={18} />
+          <span>Assistant</span>
         </button>
 
         <button
@@ -307,12 +350,12 @@ export const ElderView: React.FC = () => {
             padding: '14px 0',
             fontSize: '1rem',
             fontWeight: 700,
-            color: activeTab === 'appointments' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'appointments' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'appointments' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'appointments' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px'
+            gap: '6px'
           }}
         >
           <Calendar size={18} />
@@ -326,117 +369,132 @@ export const ElderView: React.FC = () => {
             padding: '14px 0',
             fontSize: '1rem',
             fontWeight: 700,
-            color: activeTab === 'people' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'people' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'people' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'people' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px'
+            gap: '6px'
           }}
         >
           <Users size={18} />
-          <span>My People</span>
+          <span>People</span>
         </button>
       </div>
 
       {/* Tab 1: Today's Schedule List */}
       {activeTab === 'schedule' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {allDoses.map((dose) => {
-            const timeStr = new Date(dose.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const isTaken = dose.status === 'TAKEN';
-            const isMissed = dose.status === 'MISSED';
+          {allDoses.length === 0 ? (
+            <div style={{ padding: '32px 20px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <CheckCircle2 size={40} color="var(--c-mint)" style={{ margin: '0 auto 12px auto' }} />
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--c-deep-ocean)' }}>No medications scheduled for today</h3>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                Your caretaker or doctor has not added active doses for today yet.
+              </p>
+            </div>
+          ) : (
+            allDoses.map((dose) => {
+              const timeStr = new Date(dose.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const isTaken = dose.status === 'TAKEN';
+              const isMissed = dose.status === 'MISSED';
 
-            return (
-              <div
-                key={dose.id}
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  padding: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  opacity: isTaken ? 0.8 : 1
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{timeStr}</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
-                    {dose.medication.name}
+              return (
+                <div
+                  key={dose.id}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    opacity: isTaken ? 0.75 : 1
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{timeStr}</div>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
+                      {dose.medication.name}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                      {dose.medication.dosage} &bull; {dose.medication.instructions}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                    {dose.medication.dosage} &bull; {dose.medication.instructions}
-                  </div>
-                </div>
 
-                <div>
-                  {isTaken ? (
-                    <span style={{
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      backgroundColor: 'var(--status-taken-bg)',
-                      color: 'var(--status-taken)',
-                      fontWeight: 700,
-                      fontSize: '0.9rem'
-                    }}>
-                      Taken
-                    </span>
-                  ) : isMissed ? (
-                    <div style={{ textAlign: 'right' }}>
+                  <div>
+                    {isTaken ? (
                       <span style={{
                         padding: '6px 12px',
                         borderRadius: '6px',
-                        backgroundColor: 'var(--status-missed-bg)',
-                        color: 'var(--status-missed)',
+                        backgroundColor: 'var(--status-taken-bg)',
+                        color: 'var(--status-taken)',
                         fontWeight: 700,
-                        fontSize: '0.9rem',
-                        display: 'inline-block',
-                        marginBottom: '6px'
+                        fontSize: '0.9rem'
                       }}>
-                        Missed
+                        Taken
                       </span>
+                    ) : isMissed ? (
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          backgroundColor: 'var(--status-missed-bg)',
+                          color: 'var(--status-missed)',
+                          fontWeight: 700,
+                          fontSize: '0.9rem',
+                          display: 'inline-block',
+                          marginBottom: '6px'
+                        }}>
+                          Missed
+                        </span>
+                        <button
+                          onClick={() => handleConfirmDose(dose.id)}
+                          style={{
+                            display: 'block',
+                            fontSize: '0.85rem',
+                            fontWeight: 700,
+                            color: 'var(--c-deep-ocean)',
+                            textDecoration: 'underline'
+                          }}
+                        >
+                          Take now
+                        </button>
+                      </div>
+                    ) : (
                       <button
                         onClick={() => handleConfirmDose(dose.id)}
                         style={{
-                          display: 'block',
-                          fontSize: '0.85rem',
+                          padding: '8px 16px',
+                          borderRadius: '6px',
+                          backgroundColor: 'var(--c-deep-ocean)',
+                          color: '#FFFFFF',
                           fontWeight: 700,
-                          color: 'var(--primary-teal)',
-                          textDecoration: 'underline'
+                          fontSize: '0.95rem'
                         }}
                       >
-                        Take now
+                        Take
                       </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => handleConfirmDose(dose.id)}
-                      style={{
-                        padding: '8px 16px',
-                        borderRadius: '6px',
-                        backgroundColor: 'var(--primary-teal)',
-                        color: '#FFFFFF',
-                        fontWeight: 700,
-                        fontSize: '0.95rem'
-                      }}
-                    >
-                      Take
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       )}
 
-      {/* Tab 2: Appointments */}
+      {/* Tab 2: Sathi AI Voice/Chat Assistant */}
+      {activeTab === 'companion' && (
+        <ElderCompanion />
+      )}
+
+      {/* Tab 3: Appointments */}
       {activeTab === 'appointments' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {appointments.length === 0 ? (
-            <div style={{ padding: '24px', textAlign: 'center', backgroundColor: 'var(--bg-surface)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            <div style={{ padding: '24px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
               <p style={{ color: 'var(--text-muted)' }}>No upcoming doctor appointments scheduled.</p>
             </div>
           ) : (
@@ -444,13 +502,13 @@ export const ElderView: React.FC = () => {
               <div
                 key={apt.id}
                 style={{
-                  backgroundColor: 'var(--bg-surface)',
+                  backgroundColor: '#FFFFFF',
                   border: '1px solid var(--border-color)',
                   borderRadius: '8px',
                   padding: '18px'
                 }}
               >
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--primary-teal)', marginBottom: '4px' }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--c-ocean-teal)', marginBottom: '4px' }}>
                   {new Date(apt.scheduledAt).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })} at {new Date(apt.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '4px' }}>
@@ -466,108 +524,109 @@ export const ElderView: React.FC = () => {
                     Location: {apt.location}
                   </div>
                 )}
-                {apt.notes && (
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                    Note: {apt.notes}
-                  </div>
-                )}
               </div>
             ))
           )}
         </div>
       )}
 
-      {/* Tab 3: My People (Elderly Empowerment & Consent) */}
+      {/* Tab 4: My People (Elderly Empowerment & Consent) */}
       {activeTab === 'people' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ padding: '12px 16px', borderRadius: '8px', backgroundColor: 'var(--primary-teal-light)', color: 'var(--primary-teal)', fontSize: '0.9rem', fontWeight: 600 }}>
-            You are in full control. You can decide what each family member can view or edit, and you can revoke access anytime.
+          <div style={{ padding: '14px 16px', borderRadius: '8px', backgroundColor: 'var(--primary-light)', color: 'var(--c-deep-ocean)', fontSize: '0.9rem', fontWeight: 600, border: '1px solid var(--c-ocean-teal)' }}>
+            Share your Patient Link Code <strong>{linkCode}</strong> with your family or caretaker so they can connect with you.
           </div>
 
-          {caregivers.map((link) => {
-            const isRevoked = link.status === 'REVOKED';
+          {caregivers.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <p style={{ color: 'var(--text-muted)' }}>No caregivers linked to your profile yet.</p>
+            </div>
+          ) : (
+            caregivers.map((link) => {
+              const isRevoked = link.status === 'REVOKED';
 
-            return (
-              <div
-                key={link.id}
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  padding: '18px',
-                  opacity: isRevoked ? 0.6 : 1
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {link.caregiver.name}
-                    </h3>
-                    <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-                      {link.relationship} &bull; {link.caregiver.email}
+              return (
+                <div
+                  key={link.id}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    padding: '18px',
+                    opacity: isRevoked ? 0.6 : 1
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                        {link.caregiver.name}
+                      </h3>
+                      <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+                        {link.relationship} &bull; {link.caregiver.email}
+                      </div>
                     </div>
+
+                    <span style={{
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      backgroundColor: isRevoked ? 'var(--status-missed-bg)' : 'var(--status-taken-bg)',
+                      color: isRevoked ? 'var(--status-missed)' : 'var(--status-taken)'
+                    }}>
+                      {isRevoked ? 'Revoked' : 'Active'}
+                    </span>
                   </div>
 
-                  <span style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                    backgroundColor: isRevoked ? 'var(--status-missed-bg)' : 'var(--status-taken-bg)',
-                    color: isRevoked ? 'var(--status-missed)' : 'var(--status-taken)'
-                  }}>
-                    {isRevoked ? 'Revoked' : 'Active'}
-                  </span>
+                  {!isRevoked && (
+                    <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '12px' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px' }}>
+                        Elder Permissions:
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={link.canEditMeds}
+                            onChange={() => handleTogglePermission(link.id, 'canEditMeds', link.canEditMeds)}
+                            style={{ width: '18px', height: '18px' }}
+                          />
+                          <span>Can add and edit medications</span>
+                        </label>
+
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={link.canEditAppointments}
+                            onChange={() => handleTogglePermission(link.id, 'canEditAppointments', link.canEditAppointments)}
+                            style={{ width: '18px', height: '18px' }}
+                          />
+                          <span>Can manage doctor appointments</span>
+                        </label>
+                      </div>
+
+                      <button
+                        onClick={() => handleRevoke(link.id)}
+                        style={{
+                          marginTop: '16px',
+                          padding: '8px 14px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--status-missed)',
+                          backgroundColor: 'transparent',
+                          color: 'var(--status-missed)',
+                          fontSize: '0.88rem',
+                          fontWeight: 600
+                        }}
+                      >
+                        Revoke Access
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                {!isRevoked && (
-                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '12px' }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px' }}>
-                      Allowed Permissions:
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={link.canEditMeds}
-                          onChange={() => handleTogglePermission(link.id, 'canEditMeds', link.canEditMeds)}
-                          style={{ width: '18px', height: '18px' }}
-                        />
-                        <span>Can add and edit medications</span>
-                      </label>
-
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={link.canEditAppointments}
-                          onChange={() => handleTogglePermission(link.id, 'canEditAppointments', link.canEditAppointments)}
-                          style={{ width: '18px', height: '18px' }}
-                        />
-                        <span>Can manage doctor appointments</span>
-                      </label>
-                    </div>
-
-                    <button
-                      onClick={() => handleRevoke(link.id)}
-                      style={{
-                        marginTop: '16px',
-                        padding: '8px 14px',
-                        borderRadius: '6px',
-                        border: '1px solid var(--status-missed)',
-                        backgroundColor: 'transparent',
-                        color: 'var(--status-missed)',
-                        fontSize: '0.88rem',
-                        fontWeight: 600
-                      }}
-                    >
-                      Revoke Access
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       )}
     </div>

@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { LandingPage } from './components/LandingPage';
 import { ElderView } from './components/ElderView';
 import { CaretakerView } from './components/CaretakerView';
+import { AdminView } from './components/AdminView';
 
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -38,7 +39,7 @@ export const App: React.FC = () => {
     try {
       await apiRequest('/api/auth/logout', { method: 'POST' });
     } catch (err) {
-      // Proceed with local logout regardless
+      // Clear session regardless
     }
     localStorage.removeItem('sehatsathi_token');
     setCurrentUser(null);
@@ -59,29 +60,33 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header user={currentUser} onLogout={handleLogout} />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
+      {currentUser && <Header user={currentUser} onLogout={handleLogout} />}
 
       <main style={{ flex: 1, paddingBottom: '40px' }}>
         {!currentUser ? (
           <LandingPage onLoginSuccess={handleLoginSuccess} />
         ) : currentUser.role === 'ELDER' ? (
           <ElderView />
+        ) : currentUser.role === 'ADMIN' ? (
+          <AdminView />
         ) : (
           <CaretakerView currentUser={currentUser} />
         )}
       </main>
 
-      <footer style={{
-        textAlign: 'center',
-        padding: '20px',
-        fontSize: '0.85rem',
-        color: 'var(--text-muted)',
-        borderTop: '1px solid var(--border-color)',
-        backgroundColor: 'var(--bg-surface)'
-      }}>
-        SehatSathi &bull; Dignified Senior Care &bull; Prompt Wars X Catalyst Hackathon 2026
-      </footer>
+      {currentUser && (
+        <footer style={{
+          textAlign: 'center',
+          padding: '20px',
+          fontSize: '0.82rem',
+          color: 'var(--text-muted)',
+          borderTop: '1px solid var(--border-color)',
+          backgroundColor: '#FFFFFF'
+        }}>
+          SehatSathi &bull; Dignified Senior Care &bull; Prompt Wars X Catalyst 2026
+        </footer>
+      )}
     </div>
   );
 };

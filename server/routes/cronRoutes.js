@@ -6,3 +6,4 @@ router.get('/tick', cronController.handleCronTick);
 router.post('/tick', cronController.handleCronTick);
 
 module.exports = router;
+

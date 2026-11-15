@@ -29,3 +29,4 @@ async function handleCronTick(req, res, next) {
 module.exports = {
   handleCronTick
 };
+

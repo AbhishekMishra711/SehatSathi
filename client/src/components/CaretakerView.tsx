@@ -9,10 +9,8 @@ import {
   Sparkles, 
   Plus, 
   AlertTriangle, 
-  CheckCircle2, 
   Clock, 
-  ShieldAlert,
-  Send
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface CaretakerViewProps {
@@ -50,18 +48,23 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
   const [simulating, setSimulating] = useState(false);
   const [simulationResult, setSimulationResult] = useState<any>(null);
 
-  // Load elder profile id from currentUser.linkedElders or fetch me
-  useEffect(() => {
-    const initElder = async () => {
-      try {
-        const meRes = await apiRequest<{ success: boolean; user: any }>('/api/auth/me');
-        if (meRes.success && meRes.user.linkedElders?.length > 0) {
-          setElderProfileId(meRes.user.linkedElders[0].elderProfileId);
-        }
-      } catch (err) {
-        console.error('Failed to load user links', err);
+  // Link elder state
+  const [connectCode, setConnectCode] = useState('');
+  const [connectRelation, setConnectRelation] = useState('Son / Daughter');
+  const [connecting, setConnecting] = useState(false);
+
+  const initElder = async () => {
+    try {
+      const meRes = await apiRequest<{ success: boolean; user: any }>('/api/auth/me');
+      if (meRes.success && meRes.user.linkedElders?.length > 0) {
+        setElderProfileId(meRes.user.linkedElders[0].elderProfileId);
       }
-    };
+    } catch (err) {
+      console.error('Failed to load user links', err);
+    }
+  };
+
+  useEffect(() => {
     initElder();
   }, [currentUser]);
 
@@ -199,7 +202,106 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
     }
   };
 
-  if (!elderProfileId || !overviewData) {
+  // If no elder linked yet, show "Connect to Patient" card
+  if (!elderProfileId) {
+    return (
+      <div style={{ maxWidth: '520px', margin: '48px auto', padding: '20px' }}>
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          border: '1px solid var(--border-color)',
+          borderRadius: '12px',
+          padding: '32px',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            backgroundColor: 'var(--primary-light)',
+            color: 'var(--c-deep-ocean)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px auto'
+          }}>
+            <LinkIcon size={24} />
+          </div>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '8px' }}>
+            Connect to a Patient Profile
+          </h2>
+          <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
+            To view medications and receive escalation alerts, please enter the Patient Link Code provided on the senior's phone screen.
+          </p>
+
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setConnecting(true);
+            try {
+              // Register caregiver link via linking code
+              const me = await apiRequest<{ success: boolean; user: any }>('/api/auth/me');
+              const res = await apiRequest<{ success: boolean; message: string }>('/api/caretaker/link-patient', {
+                method: 'POST',
+                body: JSON.stringify({ linkCode: connectCode, relationship: connectRelation })
+              }).catch(() => null);
+
+              // Reload links
+              await initElder();
+            } catch (err: any) {
+              alert(err.message || 'Could not connect with patient code.');
+            } finally {
+              setConnecting(false);
+            }
+          }}>
+            <div style={{ marginBottom: '14px', textAlign: 'left' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                Patient Link Code
+              </label>
+              <input
+                type="text"
+                required
+                value={connectCode}
+                onChange={(e) => setConnectCode(e.target.value.toUpperCase())}
+                placeholder="e.g. EL-8492"
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-strong)', textTransform: 'uppercase', fontWeight: 700 }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>
+                Your Relationship
+              </label>
+              <input
+                type="text"
+                required
+                value={connectRelation}
+                onChange={(e) => setConnectRelation(e.target.value)}
+                placeholder="e.g. Son, Daughter, Nurse"
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={connecting}
+              style={{
+                width: '100%',
+                padding: '12px 0',
+                borderRadius: '6px',
+                backgroundColor: 'var(--c-deep-ocean)',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: '1rem'
+              }}
+            >
+              {connecting ? 'Connecting...' : 'Connect to Patient'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  if (!overviewData) {
     return (
       <div style={{ maxWidth: '900px', margin: '40px auto', textAlign: 'center', padding: '20px' }}>
         <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)' }}>Loading care dashboard...</p>
@@ -213,7 +315,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 20px' }}>
       {/* Top Elder Context Bar */}
       <div style={{
-        backgroundColor: 'var(--bg-surface)',
+        backgroundColor: '#FFFFFF',
         border: '1px solid var(--border-color)',
         borderRadius: '12px',
         padding: '24px',
@@ -226,7 +328,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--c-deep-ocean)', margin: 0 }}>
               {elder.name}
             </h1>
             <span style={{
@@ -234,8 +336,8 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
               fontWeight: 700,
               padding: '2px 8px',
               borderRadius: '12px',
-              backgroundColor: 'var(--primary-teal-light)',
-              color: 'var(--primary-teal)'
+              backgroundColor: 'var(--primary-light)',
+              color: 'var(--c-deep-ocean)'
             }}>
               Blood Group: {elder.bloodGroup || 'Not specified'}
             </span>
@@ -244,11 +346,11 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             Medical Notes: {elder.medicalNotes}
           </p>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', marginTop: '2px', fontWeight: 600 }}>
-            Emergency Contact: {elder.emergencyPhone}
+            Emergency Contact: {elder.emergencyPhone || 'Not specified'}
           </div>
         </div>
 
-        {/* Live Simulation Button for Judges */}
+        {/* Live Simulation Button for Testing */}
         <div style={{ textAlign: 'right' }}>
           <button
             onClick={handleTriggerSimulation}
@@ -289,7 +391,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
           </h4>
           <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', margin: 0 }}>
             Simulated missed dose for <strong>{simulationResult.targetDose?.medication}</strong>.
-            Alerted Caretaker Aarav Sharma via Resend Email and recorded in Audit Log.
+            Alerted Caretaker via email and recorded in Audit Log.
           </p>
         </div>
       )}
@@ -301,28 +403,28 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
         gap: '16px',
         marginBottom: '28px'
       }}>
-        <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>7-Day Adherence</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary-teal)', marginTop: '4px' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginTop: '4px' }}>
             {stats.adherenceRate}%
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Doses Taken on Time</div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--status-taken)', marginTop: '4px' }}>
             {stats.takenCount}
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Missed / Escalated</div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--status-missed)', marginTop: '4px' }}>
             {stats.missedCount}
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '18px' }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Pending Today</div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--status-due)', marginTop: '4px' }}>
             {stats.pendingCount}
@@ -342,8 +444,8 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             padding: '12px 20px',
             fontSize: '0.95rem',
             fontWeight: 700,
-            color: activeTab === 'overview' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'overview' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'overview' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'overview' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -359,8 +461,8 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             padding: '12px 20px',
             fontSize: '0.95rem',
             fontWeight: 700,
-            color: activeTab === 'medications' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'medications' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'medications' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'medications' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -376,8 +478,8 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             padding: '12px 20px',
             fontSize: '0.95rem',
             fontWeight: 700,
-            color: activeTab === 'appointments' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'appointments' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'appointments' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'appointments' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -393,8 +495,8 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             padding: '12px 20px',
             fontSize: '0.95rem',
             fontWeight: 700,
-            color: activeTab === 'audit' ? 'var(--primary-teal)' : 'var(--text-muted)',
-            borderBottom: activeTab === 'audit' ? '3px solid var(--primary-teal)' : 'none',
+            color: activeTab === 'audit' ? 'var(--c-deep-ocean)' : 'var(--text-muted)',
+            borderBottom: activeTab === 'audit' ? '3px solid var(--c-deep-ocean)' : 'none',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -409,52 +511,56 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
       {activeTab === 'overview' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
           {/* Recent Doses */}
-          <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '20px' }}>
+          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '20px' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px' }}>Recent Doses</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {overviewData.recentDoses.map((dose: DoseSchedule) => (
-                <div
-                  key={dose.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 12px',
-                    borderRadius: '6px',
-                    backgroundColor: 'var(--bg-primary)',
-                    border: '1px solid var(--border-color)'
-                  }}
-                >
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>{dose.medication.name}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      {new Date(dose.scheduledFor).toLocaleDateString([], { month: 'short', day: 'numeric' })} at {new Date(dose.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {overviewData.recentDoses.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No recent doses logged yet.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {overviewData.recentDoses.map((dose: DoseSchedule) => (
+                  <div
+                    key={dose.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 12px',
+                      borderRadius: '6px',
+                      backgroundColor: 'var(--bg-primary)',
+                      border: '1px solid var(--border-color)'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>{dose.medication.name}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        {new Date(dose.scheduledFor).toLocaleDateString([], { month: 'short', day: 'numeric' })} at {new Date(dose.scheduledFor).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
                     </div>
-                  </div>
 
-                  <span style={{
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                    backgroundColor: dose.status === 'TAKEN' ? 'var(--status-taken-bg)' : dose.status === 'MISSED' ? 'var(--status-missed-bg)' : 'var(--status-due-bg)',
-                    color: dose.status === 'TAKEN' ? 'var(--status-taken)' : dose.status === 'MISSED' ? 'var(--status-missed)' : 'var(--status-due)'
-                  }}>
-                    {dose.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+                    <span style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      backgroundColor: dose.status === 'TAKEN' ? 'var(--status-taken-bg)' : dose.status === 'MISSED' ? 'var(--status-missed-bg)' : 'var(--status-due-bg)',
+                      color: dose.status === 'TAKEN' ? 'var(--status-taken)' : dose.status === 'MISSED' ? 'var(--status-missed)' : 'var(--status-due)'
+                    }}>
+                      {dose.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Upcoming Visits */}
-          <div style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '20px' }}>
+          {/* Upcoming Doctor Visits */}
+          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Upcoming Doctor Visits</h3>
               {permissions.canEditAppointments && (
                 <button
                   onClick={() => setShowAddAptModal(true)}
-                  style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary-teal)' }}
+                  style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--c-ocean-teal)' }}
                 >
                   + Add Visit
                 </button>
@@ -476,7 +582,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                   }}
                 >
                   <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{apt.doctorName}</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--primary-teal)', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--c-ocean-teal)', fontWeight: 600 }}>
                     {new Date(apt.scheduledAt).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })} at {new Date(apt.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -503,7 +609,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                   gap: '6px',
                   padding: '10px 16px',
                   borderRadius: '6px',
-                  backgroundColor: 'var(--primary-teal)',
+                  backgroundColor: 'var(--c-deep-ocean)',
                   color: '#FFFFFF',
                   fontWeight: 700,
                   fontSize: '0.92rem'
@@ -519,51 +625,58 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             )}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-            {medications.map((med) => (
-              <div
-                key={med.id}
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '10px',
-                  padding: '20px'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>
-                      {med.name}
-                    </h3>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--primary-teal)' }}>
-                      {med.dosage} &bull; {med.frequency}
+          {medications.length === 0 ? (
+            <div style={{ padding: '36px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <Pill size={36} color="var(--c-ocean-teal)" style={{ margin: '0 auto 8px auto' }} />
+              <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>No medications added yet. Tap "Add Medication" above to create the first schedule.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+              {medications.map((med) => (
+                <div
+                  key={med.id}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '10px',
+                    padding: '20px'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>
+                        {med.name}
+                      </h3>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--c-ocean-teal)' }}>
+                        {med.dosage} &bull; {med.frequency}
+                      </div>
                     </div>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      backgroundColor: 'var(--status-taken-bg)',
+                      color: 'var(--status-taken)'
+                    }}>
+                      Active
+                    </span>
                   </div>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                    backgroundColor: 'var(--status-taken-bg)',
-                    color: 'var(--status-taken)'
-                  }}>
-                    Active
-                  </span>
-                </div>
 
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: '12px 0' }}>
-                  {med.instructions}
-                </p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: '12px 0' }}>
+                    {med.instructions}
+                  </p>
 
-                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Clock size={16} color="var(--text-muted)" />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
-                    Scheduled times: {med.timeSlots.join(', ')}
-                  </span>
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Clock size={16} color="var(--text-muted)" />
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                      Scheduled times: {med.timeSlots.join(', ')}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -581,7 +694,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                   gap: '6px',
                   padding: '10px 16px',
                   borderRadius: '6px',
-                  backgroundColor: 'var(--primary-teal)',
+                  backgroundColor: 'var(--c-deep-ocean)',
                   color: '#FFFFFF',
                   fontWeight: 700,
                   fontSize: '0.92rem'
@@ -593,45 +706,52 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             )}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {appointments.map((apt) => (
-              <div
-                key={apt.id}
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  padding: '18px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>
-                    {apt.doctorName}
-                  </h3>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--primary-teal)', fontWeight: 600 }}>
-                    {apt.specialty} &bull; {apt.location}
-                  </div>
-                  {apt.notes && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      {apt.notes}
+          {appointments.length === 0 ? (
+            <div style={{ padding: '36px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <Calendar size={36} color="var(--c-ocean-teal)" style={{ margin: '0 auto 8px auto' }} />
+              <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>No doctor visits scheduled yet.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {appointments.map((apt) => (
+                <div
+                  key={apt.id}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    padding: '18px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px 0' }}>
+                      {apt.doctorName}
+                    </h3>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--c-ocean-teal)', fontWeight: 600 }}>
+                      {apt.specialty} &bull; {apt.location}
                     </div>
-                  )}
-                </div>
+                    {apt.notes && (
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                        {apt.notes}
+                      </div>
+                    )}
+                  </div>
 
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)' }}>
-                    {new Date(apt.scheduledAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    {new Date(apt.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)' }}>
+                      {new Date(apt.scheduledAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      {new Date(apt.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -643,47 +763,53 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             Full accountability history: who modified medications, who took doses, and automated escalation dispatches.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {auditLogs.map((log) => (
-              <div
-                key={log.id}
-                style={{
-                  backgroundColor: 'var(--bg-surface)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  padding: '14px 18px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg-subtle)',
-                      color: 'var(--text-muted)'
-                    }}>
-                      {log.action}
-                    </span>
-                    <span style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                      {log.details}
-                    </span>
+          {auditLogs.length === 0 ? (
+            <div style={{ padding: '36px', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <p style={{ color: 'var(--text-muted)' }}>No audit events recorded yet.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {auditLogs.map((log) => (
+                <div
+                  key={log.id}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    padding: '14px 18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: 'var(--bg-subtle)',
+                        color: 'var(--text-muted)'
+                      }}>
+                        {log.action}
+                      </span>
+                      <span style={{ fontSize: '0.92rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                        {log.details}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                      By {log.performedBy.name} ({log.performedBy.role})
+                    </div>
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    By {log.performedBy.name} ({log.performedBy.role})
-                  </div>
-                </div>
 
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                  {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                    {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -695,7 +821,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -703,7 +829,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
           zIndex: 100
         }}>
           <div style={{
-            backgroundColor: 'var(--bg-surface)',
+            backgroundColor: '#FFFFFF',
             borderRadius: '12px',
             maxWidth: '560px',
             width: '100%',
@@ -711,22 +837,24 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
             maxHeight: '90vh',
             overflowY: 'auto'
           }}>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '6px' }}>Add Medication</h3>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '6px' }}>
+              Add Medication
+            </h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
               Add a new schedule for senior. You can use Gemini AI to convert doctor instructions into schedules automatically.
             </p>
 
             {/* Gemini Assistant Box */}
             <div style={{
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #CBD5E1',
+              backgroundColor: 'var(--primary-light)',
+              border: '1px solid var(--c-ocean-teal)',
               borderRadius: '8px',
               padding: '16px',
               marginBottom: '20px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <Sparkles size={18} color="var(--primary-teal)" />
-                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--primary-teal)' }}>
+                <Sparkles size={18} color="var(--c-deep-ocean)" />
+                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--c-deep-ocean)' }}>
                   Gemini Prescription Parser
                 </span>
               </div>
@@ -751,13 +879,13 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                 style={{
                   padding: '8px 14px',
                   borderRadius: '6px',
-                  backgroundColor: 'var(--primary-teal)',
+                  backgroundColor: 'var(--c-deep-ocean)',
                   color: '#FFFFFF',
                   fontWeight: 600,
                   fontSize: '0.85rem'
                 }}
               >
-                {isAiParsing ? 'Analyzing...' : 'Parse with Gemini'}
+                {isAiParsing ? 'Analyzing with Gemini...' : 'Parse with Gemini'}
               </button>
             </div>
 
@@ -842,7 +970,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: '10px 18px', borderRadius: '6px', backgroundColor: 'var(--primary-teal)', color: '#FFFFFF', fontWeight: 700 }}
+                  style={{ padding: '10px 18px', borderRadius: '6px', backgroundColor: 'var(--c-deep-ocean)', color: '#FFFFFF', fontWeight: 700 }}
                 >
                   Save Medication
                 </button>
@@ -860,7 +988,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -868,13 +996,15 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
           zIndex: 100
         }}>
           <div style={{
-            backgroundColor: 'var(--bg-surface)',
+            backgroundColor: '#FFFFFF',
             borderRadius: '12px',
             maxWidth: '480px',
             width: '100%',
             padding: '24px'
           }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '16px' }}>Schedule Doctor Appointment</h3>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginBottom: '16px' }}>
+              Schedule Doctor Appointment
+            </h3>
             <form onSubmit={handleSaveAppointment}>
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '4px' }}>Doctor Name</label>
@@ -927,7 +1057,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                   type="text"
                   value={aptForm.notes}
                   onChange={(e) => setAptForm({ ...aptForm, notes: e.target.value })}
-                  placeholder="Bring last month BP report"
+                  placeholder="Bring BP record"
                   style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border-strong)' }}
                 />
               </div>
@@ -942,7 +1072,7 @@ export const CaretakerView: React.FC<CaretakerViewProps> = ({ currentUser }) => 
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: 'var(--primary-teal)', color: '#FFFFFF', fontWeight: 700 }}
+                  style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: 'var(--c-deep-ocean)', color: '#FFFFFF', fontWeight: 700 }}
                 >
                   Confirm Visit
                 </button>

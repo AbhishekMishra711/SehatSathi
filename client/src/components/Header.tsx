@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../types';
-import { HeartPulse, LogOut } from 'lucide-react';
+import { HeartHandshake, LogOut, Shield } from 'lucide-react';
 
 interface HeaderProps {
   user: User | null;
@@ -10,19 +10,30 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   return (
     <header style={{
-      backgroundColor: 'var(--bg-surface)',
+      backgroundColor: '#FFFFFF',
       borderBottom: '1px solid var(--border-color)',
-      padding: '12px 20px',
+      padding: '12px 24px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       position: 'sticky',
       top: 0,
-      zIndex: 10
+      zIndex: 100
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <HeartPulse size={26} color="var(--primary-teal)" />
-        <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-teal)', letterSpacing: '-0.02em' }}>
+        <div style={{
+          width: '36px',
+          height: '36px',
+          borderRadius: '8px',
+          backgroundColor: 'var(--c-deep-ocean)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#FFFFFF'
+        }}>
+          <HeartHandshake size={20} />
+        </div>
+        <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--c-deep-ocean)', letterSpacing: '-0.02em' }}>
           SehatSathi
         </span>
       </div>
@@ -30,18 +41,18 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
       {user && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)' }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>
               {user.name}
             </div>
             <span style={{
-              fontSize: '0.75rem',
-              fontWeight: 500,
+              fontSize: '0.74rem',
+              fontWeight: 700,
               padding: '2px 8px',
               borderRadius: '12px',
-              backgroundColor: user.role === 'ELDER' ? 'var(--primary-teal-light)' : 'var(--bg-subtle)',
-              color: user.role === 'ELDER' ? 'var(--primary-teal)' : 'var(--text-muted)'
+              backgroundColor: user.role === 'ELDER' ? 'var(--c-lime)' : user.role === 'ADMIN' ? 'var(--c-deep-ocean)' : 'var(--c-mint)',
+              color: user.role === 'ADMIN' ? '#FFFFFF' : 'var(--c-deep-ocean)'
             }}>
-              {user.role === 'ELDER' ? 'Senior Profile' : user.role === 'CARETAKER' ? 'Primary Caretaker' : 'Family Member'}
+              {user.role === 'ELDER' ? 'Patient' : user.role === 'ADMIN' ? 'Administrator' : user.role === 'CARETAKER' ? 'Primary Caretaker' : 'Family Member'}
             </span>
           </div>
 
@@ -53,11 +64,11 @@ export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
               gap: '6px',
               padding: '8px 14px',
               borderRadius: '6px',
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border-strong)',
+              backgroundColor: '#FFFFFF',
               color: 'var(--text-muted)',
-              fontSize: '0.9rem',
-              fontWeight: 500
+              fontSize: '0.88rem',
+              fontWeight: 600
             }}
             aria-label="Sign out of account"
           >
