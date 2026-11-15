@@ -1,0 +1,157 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ELDER
+  CARETAKER
+  FAMILY
+}
+
+enum LinkStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum DoseStatus {
+  PENDING
+  TAKEN
+  MISSED
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  phone          String?
+  role           Role            @default(ELDER)
+  pinHash        String?         // Hashed 4-digit PIN for seniors
+  passwordHash   String?         // Hashed strong password for caretakers/family
+  failedAttempts Int             @default(0)
+  lockedUntil    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  elderProfile   ElderProfile?
+  caregiverLinks CaregiverLink[] @relation("CaregiverToLinks")
+  auditActions   AuditLog[]      @relation("UserAuditActions")
+  doseConfirmations DoseSchedule[] @relation("UserDoseConfirmations")
+
+  @@index([email])
+}
+
+model ElderProfile {
+  id                 String          @id @default(cuid())
+  userId             String          @unique
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emergencyPhone     String?
+  bloodGroup         String?
+  medicalNotes       String?
+  activeGraceMinutes Int             @default(15) // Grace window before escalation (can be 1 min in demo mode)
+  demoMode           Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  caregivers         CaregiverLink[] @relation("ElderToLinks")
+  medications        Medication[]
+  doseSchedules      DoseSchedule[]
+  appointments       Appointment[]
+  auditLogs          AuditLog[]
+
+  @@index([userId])
+}
+
+model CaregiverLink {
+  id                  String       @id @default(cuid())
+  elderProfileId      String
+  elderProfile        ElderProfile @relation("ElderToLinks", fields: [elderProfileId], references: [id], onDelete: Cascade)
+  caregiverId         String
+  caregiver           User         @relation("CaregiverToLinks", fields: [caregiverId], references: [id], onDelete: Cascade)
+  relationship        String       // "Son", "Daughter", "Nurse", "Primary Caregiver"
+  canEditMeds         Boolean      @default(true)
+  canEditAppointments Boolean      @default(true)
+  canViewLogs         Boolean      @default(true)
+  status              LinkStatus   @default(ACTIVE)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@unique([elderProfileId, caregiverId])
+  @@index([elderProfileId])
+  @@index([caregiverId])
+}
+
+model Medication {
+  id             String         @id @default(cuid())
+  elderProfileId String
+  elderProfile   ElderProfile   @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  name           String
+  dosage         String         // e.g. "500 mg"
+  instructions   String         // e.g. "Take after breakfast with water"
+  frequency      String         // e.g. "DAILY", "TWICE_DAILY"
+  timeSlots      String[]       // Array of HH:mm e.g. ["08:00", "20:00"]
+  startDate      DateTime       @default(now())
+  endDate        DateTime?
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  doses          DoseSchedule[]
+
+  @@index([elderProfileId])
+}
+
+model DoseSchedule {
+  id              String       @id @default(cuid())
+  medicationId    String
+  medication      Medication   @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  elderProfileId  String
+  elderProfile    ElderProfile @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  scheduledFor    DateTime     // Specific timestamp due
+  status          DoseStatus   @default(PENDING)
+  takenAt         DateTime?
+  takenByUserId   String?
+  takenByUser     User?        @relation("UserDoseConfirmations", fields: [takenByUserId], references: [id])
+  escalationLevel Int          @default(0) // 0: None, 1: Elder reminded, 2: Caretaker alerted, 3: Family alerted
+  lastNotifiedAt  DateTime?
+  notificationLog String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([elderProfileId, scheduledFor])
+  @@index([status, scheduledFor])
+}
+
+model Appointment {
+  id             String       @id @default(cuid())
+  elderProfileId String
+  elderProfile   ElderProfile @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  doctorName     String
+  specialty      String?
+  location       String?
+  scheduledAt    DateTime
+  notes          String?
+  reminded       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([elderProfileId, scheduledAt])
+}
+
+model AuditLog {
+  id             String       @id @default(cuid())
+  elderProfileId String
+  elderProfile   ElderProfile @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  performedById  String
+  performedBy    User         @relation("UserAuditActions", fields: [performedById], references: [id])
+  action         String       // "MEDICATION_ADDED", "DOSE_TAKEN", "PERMISSION_CHANGED", "ESCALATION_FIRED"
+  details        String
+  createdAt      DateTime     @default(now())
+
+  @@index([elderProfileId, createdAt])
+}

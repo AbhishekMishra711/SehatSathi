@@ -1,0 +1,16 @@
+{
+  "short_name": "SehatSathi",
+  "name": "SehatSathi Senior Care",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FBFBF9",
+  "theme_color": "#0F4C5C",
+  "display": "standalone",
+  "orientation": "portrait"
+}

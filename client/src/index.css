@@ -1,0 +1,62 @@
+:root {
+  --bg-primary: #FBFBF9;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F3F4F6;
+  --border-color: #E5E7EB;
+  --border-strong: #D1D5DB;
+  
+  --text-main: #1F2937;
+  --text-muted: #4B5563;
+  --text-light: #9CA3AF;
+  
+  --primary-teal: #0F4C5C;
+  --primary-teal-hover: #0A3540;
+  --primary-teal-light: #E6EFF1;
+  
+  --status-taken: #15803D;
+  --status-taken-bg: #DCFCE7;
+  --status-due: #D97706;
+  --status-due-bg: #FEF3C7;
+  --status-missed: #DC2626;
+  --status-missed-bg: #FEE2E2;
+
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* Accessible focus ring */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--primary-teal);
+  outline-offset: 2px;
+}
+
+/* Senior Friendly minimum touch target */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
