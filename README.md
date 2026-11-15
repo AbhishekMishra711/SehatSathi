@@ -104,13 +104,11 @@ npx prisma db push
 npm run dev
 ```
 
-### Docker Deployment
-```bash
-# Build & run production container
-docker build -t sehatsathi .
-docker run -p 5000:5000 --env-file .env sehatsathi
-```
-Open [http://localhost:5000](http://localhost:5000) to access the complete application.
+### Production Deployment (Vercel)
+Deploy directly on [Vercel](https://vercel.com) with automatic fullstack routing (`vercel.json`):
+1. Import this repository on Vercel.
+2. Add your environment variables (`DATABASE_URL`, `JWT_SECRET`, `CRON_SECRET`, `RESEND_API_KEY`, `GEMINI_API_KEY`).
+3. Click **Deploy**.
 
 ---
 
