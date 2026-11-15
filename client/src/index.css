@@ -1,24 +1,26 @@
 :root {
-  /* User requested palette: b5e48c, 99d98c, 76c893, 52b69a, 34a0a4, 168aad, 1a759f, 184e77 */
-  --c-lime: #b5e48c;
-  --c-mint-light: #99d98c;
-  --c-mint: #76c893;
-  --c-teal-green: #52b69a;
-  --c-teal: #34a0a4;
-  --c-ocean-teal: #168aad;
-  --c-ocean-blue: #1a759f;
-  --c-deep-ocean: #184e77;
+  /* Modern Healthcare Brand Palette */
+  --c-primary: #00A86B; /* Vibrant Emerald */
+  --c-primary-hover: #00875A;
+  --c-primary-soft: #E8F8EE;
+  --c-primary-border: #A7F3D0;
+  
+  --c-secondary: #0F172A; /* Deep Slate */
+  --c-secondary-hover: #1E293B;
 
-  /* Semantic Theme Tokens */
-  --bg-primary: #F7FAF9; /* Soft healthy sage tint */
+  --c-sky: #0284C7;
+  --c-sky-soft: #E0F2FE;
+
+  /* Semantic Tokens */
+  --bg-canvas: #FAFCFB;
   --bg-surface: #FFFFFF;
-  --bg-subtle: #F0FDF4;
-  --border-color: #E2E8F0;
-  --border-strong: #CBD5E1;
+  --border-subtle: rgba(226, 232, 240, 0.85);
+  --border-focus: #00A86B;
 
   --text-main: #0F172A;
-  --text-muted: #475569;
-  --text-light: #64748B;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
 
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -31,7 +33,12 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-primary);
+  background-color: #FAFCFB;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(186, 230, 253, 0.45) 0%, rgba(209, 250, 229, 0.35) 35%, rgba(250, 252, 251, 0) 75%),
+    radial-gradient(circle at 10% 25%, rgba(224, 242, 254, 0.35) 0%, rgba(250, 252, 251, 0) 45%),
+    radial-gradient(circle at 90% 35%, rgba(209, 250, 229, 0.3) 0%, rgba(250, 252, 251, 0) 45%);
+  background-attachment: fixed;
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -42,7 +49,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 button:hover {
@@ -55,8 +62,29 @@ input, select, textarea {
 }
 
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--c-ocean-teal);
+  outline: 2px solid var(--c-primary);
   outline-offset: 2px;
+}
+
+/* Glassmorphism Classes */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0,0,0,0.06);
+}
+
+.glass-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 168, 107, 0.1), 0 0 1px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
 }
 
 /* Entrance Animations */

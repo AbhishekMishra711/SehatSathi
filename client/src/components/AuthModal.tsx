@@ -293,8 +293,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(24, 78, 119, 0.45)',
-      backdropFilter: 'blur(4px)',
+      backgroundColor: 'rgba(15, 23, 42, 0.45)',
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -303,29 +304,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialRole, isOpen, onClo
     }}>
       <div style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: '16px',
+        borderRadius: '24px',
         width: '100%',
         maxWidth: '460px',
-        padding: '30px',
+        padding: '32px',
         maxHeight: '92vh',
         overflowY: 'auto',
-        border: '2px solid var(--c-mint)',
-        boxShadow: '0 25px 50px -12px rgba(24, 78, 119, 0.25)'
+        border: '1px solid rgba(226, 232, 240, 0.9)',
+        boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.18)'
       }}>
         {/* Header bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
           <div>
             <span style={{
-              fontSize: '0.78rem',
+              fontSize: '0.76rem',
               fontWeight: 800,
-              padding: '4px 10px',
-              borderRadius: '12px',
-              backgroundColor: 'var(--c-mint-light)',
-              color: 'var(--c-deep-ocean)'
+              padding: '4px 12px',
+              borderRadius: '9999px',
+              backgroundColor: '#E8F8EE',
+              color: '#00704A',
+              border: '1px solid #A7F3D0'
             }}>
               {role === 'ELDER' ? 'Senior Patient Portal' : role === 'ADMIN' ? 'Administration Portal' : 'Caregiver & Family Portal'}
             </span>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--c-deep-ocean)', marginTop: '6px' }}>
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0F172A', marginTop: '8px' }}>
               {view === 'LOGIN' ? 'Welcome Back' : view === 'REGISTER' ? 'Create Account' : 'Reset Credentials'}
             </h2>
           </div>
